@@ -12,37 +12,47 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.logging.Logger;
 
+// TODO: This class needs testing after the alteration that was made.
+// This should be done before implementing this in any real manner.
+
 /**
  * Utilises the A* algorithm for finding the path between two nodes.
  * @author Arthur
  * @param <T> The taker of the path. E.g. Creature
  * @param <K> The cost being evaluated. E.g. Distance or Overall Creature Cost
+ *
+ * @version 0.0.1 Development
  */
 public class AStarPathfinder<T, K extends IPathCost> implements IPathFinder<T, K> {
 	private static final Logger LOG = Logger.getLogger(AStarPathfinder.class.getName());
     @Override
-	@SuppressWarnings("unchecked")
     public List<IPathNode<T, K>> getPath(T taker, IPathNode<T, K> start, IPathNode<T, K> end) {
-        // Frontier List - The List of Places to Consider
+        // The Frontier - the possible paths which branch from considered paths,
+		// ordered by "path length".
         PriorityQueue<MoveCost> frontier = new PriorityQueue<>();
         frontier.add(new MoveCost(start, null));
-        // Maps a movement to a cost.
-        HashMap<IPathNode<T, K>, MoveCost> map = new HashMap<>();
+        // Maps a node in the space to the lowest cost path to get there.
+        HashMap<IPathNode<T, K>, MoveCost> map = new HashMap<>(1 << Short.SIZE);
         map.put(start, new MoveCost(null, null));
 
-        // While there are places to go.
+        // While there are still paths to consider.
         while(!frontier.isEmpty()) {
-            // Get the lowest cost point
+            // Get the lowest cost path
             MoveCost current = frontier.poll();
             if(current.node == end) {
                 break;
             }
-            // Gets the cost of moving
+            // Get the cost of moving to the destination normally
             K cost = map.get(current.node).cost;
-            List<IPathNode<T, K>> neighbours = current.node.getNeighbours();
-            neighbours.stream().forEach((next) -> {
-                K new_cost = (K) cost.add(current.node.getCostToMoveTo(taker, next));
+			// for each of the neighbours
+            current.node.getNeighbours().stream().forEach((next) -> {
+				// Get the cost associated with moving with the current path to the next node
+                K new_cost = cost == null ?
+						current.node.getCostToMoveTo(taker, next) :
+						(K) cost.add(current.node.getCostToMoveTo(taker, next));
+				// gets whether the map contains the next place or if the cost is less than
                 if (!map.containsKey(next) || new_cost.isLessThan(map.get(next).cost)) {
+					// adds the path to the next place.
                     map.put(next, new MoveCost(current.node, new_cost));
                     K projected_cost = (K) new_cost.add(next.getProjectedCostTo(taker, end));
                     frontier.add(new MoveCost(next, projected_cost));

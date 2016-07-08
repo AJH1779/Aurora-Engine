@@ -2,11 +2,18 @@ package com.auroraengine.math;
 
 import java.util.logging.Logger;
 
-public class LDVolume {
+public class LDVolume implements Cloneable {
 	private static final Logger LOG = Logger.getLogger(LDVolume.class.getName());
 	private final LDArea[] sides = new LDArea[6];
 	public LDVolume() {
-		super();
+
+	}
+	public LDVolume(LDVolume vol) {
+		for(int i = 0; i < sides.length; i++) {
+			if(vol.sides[i] != null) {
+				sides[i] = new LDArea(vol.sides[i]);
+			}
+		}
 	}
 
 	public boolean isContained(LDVec v) {
@@ -18,4 +25,8 @@ public class LDVolume {
 		return true;
 	}
 
+	@Override
+	public LDVolume clone() {
+		return new LDVolume(this);
+	}
 }

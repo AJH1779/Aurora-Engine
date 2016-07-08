@@ -5,7 +5,7 @@
  */
 package com.auroraengine.client;
 
-import com.auroraengine.data.Properties;
+import com.auroraengine.data.ProgramProperties;
 
 import java.io.File;
 
@@ -14,7 +14,7 @@ import java.io.File;
  * @author Arthur
  */
 public final class Session {
-    public Session(String name, Properties properties) {
+    public Session(String name, ProgramProperties properties) {
         this.directory = new File(properties.getProgramDirectory(), "users/" + name);
     }
     private final File directory;

@@ -12,7 +12,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * A tag that is attached to anything that is only important to the client side
+ * of the program and so shouldn't need to be included in the server side
+ * program. Need to determine how to use this properly to reduce the size of
+ * the client and server objects whilst developing them in the same environment.
  * @author Arthur
  */
 @Documented

@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.auroraengine.proto.planet2;
+package com.auroraengine.world;
 
 /**
  *
  * @author Arthur
  */
-public enum BorderType {
-    
+public class GlobalRegion {
+
 }

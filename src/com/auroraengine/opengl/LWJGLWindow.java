@@ -6,7 +6,7 @@
 package com.auroraengine.opengl;
 
 import com.auroraengine.client.Session;
-import com.auroraengine.data.Properties;
+import com.auroraengine.data.ProgramProperties;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -24,7 +24,7 @@ public class LWJGLWindow implements GLWindow {
 	 * @param session
 	 * @param properties 
 	 */
-	public LWJGLWindow(Session session, Properties properties) {
+	public LWJGLWindow(Session session, ProgramProperties properties) {
 		ops = new GLOptions(session, properties);
 	}
 	private final GLOptions ops;

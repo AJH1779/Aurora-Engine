@@ -19,21 +19,9 @@ import java.util.logging.Logger;
  * @author Aurora
  */
 public final class AuroraLogs {
-	public static class AuroraLoggerFormat extends Formatter {
-		private static final SimpleDateFormat DATE_FORMAT =
-				new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
-
-		@Override
-		public String format(LogRecord record) {
-			StringBuilder b = new StringBuilder(1000);
-			b.append("[").append(DATE_FORMAT.format(new Date(record.getMillis()))).append("] ").append(record.getSourceClassName()).append("#").append(record.getSourceMethodName()).append(" - ").append(record.getLevel()).append(": ").append(formatMessage(record)).append("\n");
-			return b.toString();
-		}
-	}
 	public static final AuroraLoggerFormat AURORA_FORMATTER =
 		 new AuroraLoggerFormat();
 
-	private AuroraLogs() {}
 
 	/**
 	 * Returns the logger for the specified class file with the AuroraEngine
@@ -48,5 +36,17 @@ public final class AuroraLogs {
 		handler.setFormatter(AURORA_FORMATTER);
 		log.addHandler(handler);
 		return log;
+	}
+	private AuroraLogs() {}
+	private static class AuroraLoggerFormat extends Formatter {
+		private static final SimpleDateFormat DATE_FORMAT =
+				new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
+
+		@Override
+		public String format(LogRecord record) {
+			StringBuilder b = new StringBuilder(1000);
+			b.append("[").append(DATE_FORMAT.format(new Date(record.getMillis()))).append("] ").append(record.getSourceClassName()).append("#").append(record.getSourceMethodName()).append(" - ").append(record.getLevel()).append(": ").append(formatMessage(record)).append("\n");
+			return b.toString();
+		}
 	}
 }

@@ -7,43 +7,42 @@ package com.auroraengine;
 
 import com.auroraengine.client.ClientCore;
 import com.auroraengine.client.Session;
-import com.auroraengine.data.Properties;
-import static com.auroraengine.data.Properties.AURORA_CORE_VERSION;
+import com.auroraengine.data.ProgramProperties;
+import static com.auroraengine.data.ProgramProperties.AURORA_CORE_VERSION;
 import com.auroraengine.debug.AuroraException;
 import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.server.ServerCore;
-import com.auroraengine.threading.SynchroCore;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Level;
-import org.lwjgl.opengl.Display;
 import java.util.logging.Logger;
 
 /**
- * This is the launching class for at least all test cases. It cannot be
- * implemented or extended and serves solely as a carrier of static methods
- * relating to the initialisation of the program.
- * @author Aurora
+ * This is the class from which the program is launched for at least all test
+ * cases and in all liklihood the final product as well.
+ * It cannot be implemented or extended and serves solely as a carrier of the
+ * static methods relating to the initialisation of the program.
+ *
+ * @author A.J.H.
+ * @version 0.0.1 Development
  */
 public final class Main {
     private static final Logger LOG = AuroraLogs.getLogger(Main.class);
-	
-	private Main() {}
 
 	/**
 	 * Creates a test environment using the specified arguments. The meaning of
 	 * the arguments are defined in the javadoc for <code>start()</code>, as well
 	 * as the output for <code>help()</code>.
 	 * @param args The arguments to run the program with.
-	 * @see Main#start(java.lang.String[], java.util.function.Supplier, java.util.function.Supplier, java.util.function.Function) 
+	 * @see Main#start(java.lang.String[], java.util.function.Supplier, java.util.function.Supplier, java.util.function.Function)
 	 */
 	public static void main(String[] args) {
 		start(args,
 			// The client creation function:
 				() -> {
 					try {
-						Properties properties = new Properties("test", AURORA_CORE_VERSION);
+						ProgramProperties properties = new ProgramProperties("test", AURORA_CORE_VERSION);
 						return new ClientCore(properties, new Session("test_user", properties));
 					} catch (AuroraException ex) {
 						LOG.log(Level.SEVERE, "Exception in formation of Properties or Client: {0}", ex);
@@ -106,10 +105,10 @@ public final class Main {
 			}
 		}
 	}
-	
+
 	/**
 	 * Outputs the commands from the javadoc of start().
-	 * @see Main#start(java.lang.String[], java.util.function.Supplier, java.util.function.Supplier, java.util.function.Function) 
+	 * @see Main#start(java.lang.String[], java.util.function.Supplier, java.util.function.Supplier, java.util.function.Function)
 	 */
 	public static void help() {
 		// TODO: Print the javadoc for the start command
@@ -119,4 +118,6 @@ public final class Main {
 			"-h | --help   | Cancels loading of the program and outputs the help."
 		);
 	}
+
+	private Main() {}
 }

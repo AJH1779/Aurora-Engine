@@ -13,7 +13,8 @@ import java.lang.annotation.Target;
 
 
 /**
- *
+ * Links particular objects to particular projects, so the more specific aspects
+ * of the program can be filtered out.
  * @author Arthur
  */
 @Documented

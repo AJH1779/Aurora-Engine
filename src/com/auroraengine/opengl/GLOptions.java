@@ -7,7 +7,7 @@ package com.auroraengine.opengl;
 
 import com.auroraengine.client.ClientException;
 import com.auroraengine.client.Session;
-import com.auroraengine.data.Properties;
+import com.auroraengine.data.ProgramProperties;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,7 +25,7 @@ import java.util.Map.Entry;
  */
 public final class GLOptions {
 	private GLOptions() {}
-	public GLOptions(Session session, Properties properties) {
+	public GLOptions(Session session, ProgramProperties properties) {
 		
 	}
 	public GLOptions(GLOptions ops) {
