@@ -53,11 +53,10 @@ public final class HDRef {
         d[12] = ref1.dat[0] * ref2.dat[12] + ref1.dat[4] * ref2.dat[13] + ref1.dat[8]  * ref2.dat[14] + ref1.dat[12];
         d[13] = ref1.dat[1] * ref2.dat[12] + ref1.dat[5] * ref2.dat[13] + ref1.dat[9]  * ref2.dat[14] + ref1.dat[13];
         d[14] = ref1.dat[2] * ref2.dat[12] + ref1.dat[6] * ref2.dat[13] + ref1.dat[10] * ref2.dat[14] + ref1.dat[14];
-        d[15] = 1.0f;
+        d[15] = 1.0;
         return target != null ? target.set(d) : new HDRef(d);
     }
     
-    // The Local Methods
     /**
      * Creates a new reference frame which performs no transformation.
      */

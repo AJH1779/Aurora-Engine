@@ -3,10 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Arthur/Documents/Aurora%20Engine/src/com/auroraengine/world/GlobalRegion.java</file>
-            <file>file:/C:/Users/Arthur/Documents/Aurora%20Engine/src/com/auroraengine/world/LocalRegion.java</file>
-            <file>file:/C:/Users/Arthur/Documents/Aurora%20Engine/src/com/auroraengine/world/StellarRegion.java</file>
-            <file>file:/C:/Users/Arthur/Documents/Aurora%20Engine/src/com/auroraengine/world/Transform.java</file>
+            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/client/ClientCore.java</file>
+            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/client/Session.java</file>
+            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/math/HDQRef.java</file>
+            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/data/ProgramProperties.java</file>
+            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/server/ServerCore.java</file>
+            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/math/HDQAng.java</file>
         </group>
     </open-files>
 </project-private>

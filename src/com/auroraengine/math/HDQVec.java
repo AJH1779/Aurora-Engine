@@ -5,20 +5,55 @@
  */
 package com.auroraengine.math;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import static java.math.BigDecimal.*;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import java.util.Arrays;
 
 /**
- * <code>HDVec</code>s are modifiable objects that denote a translation in
- * Cartesian space using double precision. It is important to duplicate the
+ * <code>HDQVec</code>s are modifiable objects that denote a translation in
+ * Cartesian space using BigDecimal precision. It is important to duplicate the
  * object whenever making modifications that are not to be reflected in the
  * original.
  *
  * @author Arthur
  */
-public final class HDVec {
+public final class HDQVec {
+
+	public static final BigDecimal TWO = new BigDecimal(2);
+	public static final MathContext CONTEXT = MathContext.DECIMAL128;
+
 	// The Static Method classes
+	/**
+	 * Returns the square root.
+	 *
+	 * @param d
+	 * @return
+	 */
+	public static BigDecimal sqrt(double d) {
+		return sqrt(new BigDecimal(d, CONTEXT));
+	}
+
+	/**
+	 * Returns the square root.
+	 *
+	 * @param b
+	 * @return
+	 */
+	public static BigDecimal sqrt(BigDecimal b) {
+		BigDecimal x0 = ZERO;
+		BigDecimal x1 = new BigDecimal(Math.sqrt(b.doubleValue()), CONTEXT);
+		while (!x0.equals(x1)) {
+			x0 = x1;
+			x1 = b.divide(x0, CONTEXT);
+			x1 = x1.add(x0, CONTEXT);
+			x1 = x1.divide(TWO, CONTEXT);
+		}
+		return x1;
+	}
 
 	/**
 	 * Returns the average of the vectors, that is the sum of all vectors divided
@@ -27,12 +62,12 @@ public final class HDVec {
 	 * @param vecs The vectors to average.
 	 * @return The average vector.
 	 */
-	public static HDVec getAverage(HDVec... vecs) {
-		HDVec avg = new HDVec();
-		for (HDVec vec : vecs) {
+	public static HDQVec getAverage(HDQVec... vecs) {
+		HDQVec avg = new HDQVec();
+		for (HDQVec vec : vecs) {
 			avg.translate(vec);
 		}
-		return avg.invscale(vecs.length);
+		return avg.invscale(new BigDecimal(vecs.length, CONTEXT));
 	}
 
 	/**
@@ -43,8 +78,8 @@ public final class HDVec {
 	 * @param B The destination point
 	 * @return The translation vector
 	 */
-	public static HDVec getDistVec(HDVec A, HDVec B) {
-		return new HDVec(B).negTranslate(A);
+	public static HDQVec getDistVec(HDQVec A, HDQVec B) {
+		return new HDQVec(B).negTranslate(A);
 	}
 
 	/**
@@ -55,8 +90,8 @@ public final class HDVec {
 	 * @param B The destination point
 	 * @return The separation
 	 */
-	public static double getDist(HDVec A, HDVec B) {
-		return Math.sqrt(getSqrDist(A, B));
+	public static BigDecimal getDist(HDQVec A, HDQVec B) {
+		return sqrt(getSqrDist(A, B));
 	}
 
 	/**
@@ -67,7 +102,7 @@ public final class HDVec {
 	 * @param B The destination point
 	 * @return The separation squared
 	 */
-	public static double getSqrDist(HDVec A, HDVec B) {
+	public static BigDecimal getSqrDist(HDQVec A, HDQVec B) {
 		return getDistVec(A, B).getSqrLen();
 	}
 
@@ -75,7 +110,8 @@ public final class HDVec {
 	/**
 	 * Creates a new vector of zero length.
 	 */
-	public HDVec() {
+	public HDQVec() {
+
 	}
 
 	/**
@@ -85,8 +121,19 @@ public final class HDVec {
 	 * @param x The X component
 	 * @param y The Y component
 	 */
-	public HDVec(double x, double y) {
-		set(x, y, 0.0);
+	public HDQVec(double x, double y) {
+		set(new BigDecimal(x, CONTEXT), new BigDecimal(y, CONTEXT), ZERO);
+	}
+
+	/**
+	 * Creates a new vector with the provided X and Y components and zero for the
+	 * Z component.
+	 *
+	 * @param x The X component
+	 * @param y The Y component
+	 */
+	public HDQVec(BigDecimal x, BigDecimal y) {
+		set(x, y, ZERO);
 	}
 
 	/**
@@ -96,7 +143,18 @@ public final class HDVec {
 	 * @param y The Y component
 	 * @param z The Z component
 	 */
-	public HDVec(double x, double y, double z) {
+	public HDQVec(double x, double y, double z) {
+		set(x, y, z);
+	}
+
+	/**
+	 * Creates a new vector with the provided X, Y, and Z components
+	 *
+	 * @param x The X component
+	 * @param y The Y component
+	 * @param z The Z component
+	 */
+	public HDQVec(BigDecimal x, BigDecimal y, BigDecimal z) {
 		set(x, y, z);
 	}
 
@@ -106,17 +164,17 @@ public final class HDVec {
 	 *
 	 * @param vec The vector to copy.
 	 */
-	public HDVec(HDVec vec) {
+	public HDQVec(HDQVec vec) {
 		set(vec);
 	}
-	private final double[] data = new double[3];
+	private final BigDecimal[] data = new BigDecimal[3];
 
 	/**
 	 * Returns the X component of this vector.
 	 *
 	 * @return The X component
 	 */
-	public double X() {
+	public BigDecimal X() {
 		return data[0];
 	}
 
@@ -125,7 +183,7 @@ public final class HDVec {
 	 *
 	 * @return The Y component
 	 */
-	public double Y() {
+	public BigDecimal Y() {
 		return data[1];
 	}
 
@@ -134,7 +192,7 @@ public final class HDVec {
 	 *
 	 * @return The Z component
 	 */
-	public double Z() {
+	public BigDecimal Z() {
 		return data[2];
 	}
 
@@ -144,7 +202,7 @@ public final class HDVec {
 	 *
 	 * @return
 	 */
-	public double[] array() {
+	public BigDecimal[] array() {
 		return data;
 	}
 
@@ -156,9 +214,9 @@ public final class HDVec {
 	 * @return The Provided Buffer
 	 */
 	public ByteBuffer write(ByteBuffer bb) {
-		bb.putDouble(data[0]);
-		bb.putDouble(data[1]);
-		bb.putDouble(data[2]);
+		bb.putDouble(data[0].doubleValue());
+		bb.putDouble(data[1].doubleValue());
+		bb.putDouble(data[2].doubleValue());
 		return bb;
 	}
 
@@ -168,7 +226,17 @@ public final class HDVec {
 	 * @param x The new X component
 	 * @return This
 	 */
-	public HDVec X(double x) {
+	public HDQVec X(double x) {
+		return X(new BigDecimal(x, CONTEXT));
+	}
+
+	/**
+	 * Sets the X component to the provided value, then returns this vector.
+	 *
+	 * @param x The new X component
+	 * @return This
+	 */
+	public HDQVec X(BigDecimal x) {
 		data[0] = x;
 		return this;
 	}
@@ -179,7 +247,17 @@ public final class HDVec {
 	 * @param y The new Y component
 	 * @return This
 	 */
-	public HDVec Y(double y) {
+	public HDQVec Y(double y) {
+		return Y(new BigDecimal(y, CONTEXT));
+	}
+
+	/**
+	 * Sets the Y component to the provided value, then returns this vector.
+	 *
+	 * @param y The new Y component
+	 * @return This
+	 */
+	public HDQVec Y(BigDecimal y) {
 		data[1] = y;
 		return this;
 	}
@@ -190,7 +268,17 @@ public final class HDVec {
 	 * @param z The new Z component
 	 * @return This
 	 */
-	public HDVec Z(double z) {
+	public HDQVec Z(double z) {
+		return Z(new BigDecimal(z, CONTEXT));
+	}
+
+	/**
+	 * Sets the Z component to the provided value, then returns this vector.
+	 *
+	 * @param z The new Z component
+	 * @return This
+	 */
+	public HDQVec Z(BigDecimal z) {
 		data[2] = z;
 		return this;
 	}
@@ -204,7 +292,20 @@ public final class HDVec {
 	 * @param z The new Z component
 	 * @return This
 	 */
-	public HDVec set(double x, double y, double z) {
+	public HDQVec set(double x, double y, double z) {
+		return set(new BigDecimal(x, CONTEXT), new BigDecimal(y, CONTEXT), new BigDecimal(z, CONTEXT));
+	}
+
+	/**
+	 * Sets the X, Y, and Z components to the provided values, then returns this
+	 * vector.
+	 *
+	 * @param x The new X component
+	 * @param y The new Y component
+	 * @param z The new Z component
+	 * @return This
+	 */
+	public HDQVec set(BigDecimal x, BigDecimal y, BigDecimal z) {
 		data[0] = x;
 		data[1] = y;
 		data[2] = z;
@@ -218,7 +319,7 @@ public final class HDVec {
 	 * @param v The vector to copy
 	 * @return This
 	 */
-	public HDVec set(HDVec v) {
+	public HDQVec set(HDQVec v) {
 		data[0] = v.data[0];
 		data[1] = v.data[1];
 		data[2] = v.data[2];
@@ -231,8 +332,8 @@ public final class HDVec {
 	 *
 	 * @return The length
 	 */
-	public double getLen() {
-		return Math.sqrt(dot(this));
+	public BigDecimal getLen() {
+		return sqrt(dot(this));
 	}
 
 	/**
@@ -241,7 +342,7 @@ public final class HDVec {
 	 *
 	 * @return The square length
 	 */
-	public double getSqrLen() {
+	public BigDecimal getSqrLen() {
 		return dot(this);
 	}
 
@@ -255,10 +356,10 @@ public final class HDVec {
 	 * @param z The Z component to add
 	 * @return This
 	 */
-	public HDVec translate(double x, double y, double z) {
-		data[0] += x;
-		data[1] += y;
-		data[2] += z;
+	public HDQVec translate(BigDecimal x, BigDecimal y, BigDecimal z) {
+		data[0] = data[0].add(x, CONTEXT);
+		data[1] = data[1].add(y, CONTEXT);
+		data[2] = data[2].add(z, CONTEXT);
 		return this;
 	}
 
@@ -269,10 +370,10 @@ public final class HDVec {
 	 * @param v The translation vector
 	 * @return This
 	 */
-	public HDVec translate(HDVec v) {
-		data[0] += v.data[0];
-		data[1] += v.data[1];
-		data[2] += v.data[2];
+	public HDQVec translate(HDQVec v) {
+		data[0] = data[0].add(v.data[0], CONTEXT);
+		data[1] = data[1].add(v.data[1], CONTEXT);
+		data[2] = data[2].add(v.data[2], CONTEXT);
 		return this;
 	}
 
@@ -283,10 +384,10 @@ public final class HDVec {
 	 * @param v The translation vector
 	 * @return This
 	 */
-	public HDVec negTranslate(HDVec v) {
-		data[0] -= v.data[0];
-		data[1] -= v.data[1];
-		data[2] -= v.data[2];
+	public HDQVec negTranslate(HDQVec v) {
+		data[0] = data[0].subtract(v.data[0], CONTEXT);
+		data[1] = data[1].subtract(v.data[1], CONTEXT);
+		data[2] = data[2].subtract(v.data[2], CONTEXT);
 		return this;
 	}
 
@@ -297,10 +398,10 @@ public final class HDVec {
 	 * @param s The scale factor
 	 * @return This
 	 */
-	public HDVec scale(double s) {
-		data[0] *= s;
-		data[1] *= s;
-		data[2] *= s;
+	public HDQVec scale(BigDecimal s) {
+		data[0] = data[0].multiply(s, CONTEXT);
+		data[1] = data[1].multiply(s, CONTEXT);
+		data[2] = data[2].multiply(s, CONTEXT);
 		return this;
 	}
 
@@ -311,8 +412,8 @@ public final class HDVec {
 	 * @param s The inverse of the scale factor
 	 * @return This
 	 */
-	public HDVec invscale(double s) {
-		return scale(1.0f / s);
+	public HDQVec invscale(BigDecimal s) {
+		return scale(ONE.divide(s, CONTEXT));
 	}
 
 	/**
@@ -321,8 +422,8 @@ public final class HDVec {
 	 * @param v The second vector
 	 * @return The dot product
 	 */
-	public double dot(HDVec v) {
-		return data[0] * v.data[0] + data[1] * v.data[1] + data[2] * v.data[2];
+	public BigDecimal dot(HDQVec v) {
+		return data[0].multiply(data[0], CONTEXT).add(data[1].multiply(data[1], CONTEXT), CONTEXT).add(data[2].multiply(data[2], CONTEXT), CONTEXT);
 	}
 
 	/**
@@ -333,10 +434,12 @@ public final class HDVec {
 	 * @param v The second vector
 	 * @return The cross product vector
 	 */
-	public HDVec cross(HDVec v) {
-		return new HDVec(data[1] * v.data[2] - data[2] * v.data[1],
-						data[2] * v.data[0] - data[0] * v.data[2],
-						data[0] * v.data[1] - data[1] * v.data[0]);
+	public HDQVec cross(HDQVec v) {
+		return new HDQVec(
+						data[1].multiply(v.data[2], CONTEXT).subtract(data[2].multiply(v.data[1], CONTEXT), CONTEXT),
+						data[2].multiply(v.data[0], CONTEXT).subtract(data[0].multiply(v.data[2], CONTEXT), CONTEXT),
+						data[0].multiply(v.data[1], CONTEXT).subtract(data[1].multiply(v.data[0], CONTEXT), CONTEXT)
+		);
 	}
 
 	/**
@@ -344,8 +447,8 @@ public final class HDVec {
 	 *
 	 * @return This
 	 */
-	public HDVec normalise() {
-		return invscale((double) getLen());
+	public HDQVec normalise() {
+		return invscale(getLen());
 	}
 
 	/**
@@ -353,8 +456,11 @@ public final class HDVec {
 	 *
 	 * @return This
 	 */
-	public HDVec negate() {
-		return scale(-1.0f);
+	public HDQVec negate() {
+		data[0] = data[0].negate();
+		data[1] = data[1].negate();
+		data[2] = data[2].negate();
+		return this;
 	}
 
 	/**
@@ -365,11 +471,18 @@ public final class HDVec {
 	 * @param n The plane normal vector.
 	 * @return This
 	 */
-	public HDVec reflect(HDVec n) {
+	public HDQVec reflect(HDQVec n) {
 		return set(
-						(1.0 - 2.0 * n.data[0] * n.data[0]) * data[0] - 2.0 * n.data[0] * n.data[1] * data[1] - 2.0 * n.data[0] * n.data[2] * data[2],
-						-2.0 * n.data[0] * n.data[1] * data[0] + (1.0 - 2.0 * n.data[1] * n.data[1]) * data[1] - 2.0 * n.data[1] * n.data[2] * data[2],
-						-2.0 * n.data[0] * n.data[2] * data[0] - 2.0 * n.data[1] * n.data[2] * data[1] + (1.0 - 2.0 * n.data[2] * n.data[2]) * data[2]);
+						ONE.subtract(TWO.multiply(n.data[0], CONTEXT).multiply(n.data[0], CONTEXT), CONTEXT).multiply(data[0], CONTEXT)
+						.subtract(TWO.multiply(n.data[0], CONTEXT).multiply(n.data[1], CONTEXT).multiply(data[1], CONTEXT), CONTEXT)
+						.subtract(TWO.multiply(n.data[0], CONTEXT).multiply(n.data[2], CONTEXT).multiply(data[2], CONTEXT), CONTEXT),
+						ONE.subtract(TWO.multiply(n.data[1], CONTEXT).multiply(n.data[1], CONTEXT), CONTEXT).multiply(data[1], CONTEXT)
+						.subtract(TWO.multiply(n.data[1], CONTEXT).multiply(n.data[0], CONTEXT).multiply(data[0], CONTEXT), CONTEXT)
+						.subtract(TWO.multiply(n.data[1], CONTEXT).multiply(n.data[2], CONTEXT).multiply(data[2], CONTEXT), CONTEXT),
+						ONE.subtract(TWO.multiply(n.data[2], CONTEXT).multiply(n.data[2], CONTEXT), CONTEXT).multiply(data[2], CONTEXT)
+						.subtract(TWO.multiply(n.data[2], CONTEXT).multiply(n.data[0], CONTEXT).multiply(data[0], CONTEXT), CONTEXT)
+						.subtract(TWO.multiply(n.data[2], CONTEXT).multiply(n.data[1], CONTEXT).multiply(data[1], CONTEXT), CONTEXT)
+		);
 	}
 
 	/**
@@ -379,8 +492,12 @@ public final class HDVec {
 	 * @param n The wrapping vector
 	 * @return This
 	 */
-	public HDVec remainder(HDVec n) {
-		return set(data[0] % n.data[0], data[1] % n.data[1], data[2] % n.data[2]);
+	public HDQVec remainder(HDQVec n) {
+		return set(
+						data[0].remainder(n.data[0], CONTEXT),
+						data[1].remainder(n.data[1], CONTEXT),
+						data[2].remainder(n.data[2], CONTEXT)
+		);
 	}
 
 	/**
@@ -389,8 +506,16 @@ public final class HDVec {
 	 * @return A copy of This
 	 */
 	public LDVec toLD() {
-		return new LDVec((float) data[0], (float) data[1],
-						(float) data[2]);
+		return new LDVec(data[0].floatValue(), data[1].floatValue(), data[2].floatValue());
+	}
+
+	/**
+	 * Returns a copy of this vector as a <code>HDVec</code>
+	 *
+	 * @return A copy of This
+	 */
+	public HDVec toHD() {
+		return new HDVec(data[0].doubleValue(), data[1].doubleValue(), data[2].doubleValue());
 	}
 
 	/**
@@ -398,16 +523,8 @@ public final class HDVec {
 	 *
 	 * @return A copy of This
 	 */
-	public HDVec toHD() {
-		return new HDVec(this);
-	}
-
-	/**
-	 * Returns a copy of this vector as a <code>HDQVec</code>.
-	 * @return 
-	 */
 	public HDQVec toHDQ() {
-		return new HDQVec(data[0], data[1], data[2]);
+		return new HDQVec(this);
 	}
 	
 	/**
@@ -415,10 +532,10 @@ public final class HDVec {
 	 * @return 
 	 */
 	@Override
-	public HDVec clone() {
-		return new HDVec(this);
+	public HDQVec clone() {
+		return new HDQVec(this);
 	}
-	
+
 	/**
 	 * Returns this vector as a string in the format "(x,y,z)", where x, y, and z
 	 * are the corresponding components of this vector.
@@ -431,7 +548,7 @@ public final class HDVec {
 	}
 
 	/**
-	 * Returns true if the provided object is a <code>HDVec</code> with the same
+	 * Returns true if the provided object is a <code>HDQVec</code> with the same
 	 * components as this. Use a comparison of square separation with some
 	 * tolerance to determine when two vectors are similar
 	 *
@@ -440,13 +557,26 @@ public final class HDVec {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof HDVec && Arrays.equals(data, ((HDVec) obj).data);
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final HDQVec other = (HDQVec) obj;
+		if (!Arrays.deepEquals(this.data, other.data)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		int hash = 3;
-		hash = 29 * hash + Arrays.hashCode(this.data);
+		int hash = 7;
+		hash = 83 * hash + Arrays.deepHashCode(this.data);
 		return hash;
 	}
 }

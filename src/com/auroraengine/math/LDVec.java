@@ -18,14 +18,14 @@ import java.util.logging.Logger;
  *
  * @author Arthur
  */
-public final class LDVec {
+public final class LDVec implements Cloneable {
 
 	private static final Logger LOG = AuroraLogs.getLogger(LDVec.class);
 	// The Static Methods
 
 	/**
-	 * Returns the average of the vectors, that is the sum of all vectors
-	 * divided by the number of vectors provided.
+	 * Returns the average of the vectors, that is the sum of all vectors divided
+	 * by the number of vectors provided.
 	 *
 	 * @param vecs The vectors to average.
 	 * @return The average vector.
@@ -39,8 +39,8 @@ public final class LDVec {
 	}
 
 	/**
-	 * Returns the vector which denotes B - A, which is the translation vector
-	 * for moving from the point A to point B.
+	 * Returns the vector which denotes B - A, which is the translation vector for
+	 * moving from the point A to point B.
 	 *
 	 * @param A The starting point
 	 * @param B The destination point
@@ -63,9 +63,8 @@ public final class LDVec {
 	}
 
 	/**
-	 * Returns the square distance between A and B. This is equivalent to
-	 * getting the square length of the vector produced from
-	 * <code>getDistVec()</code>.
+	 * Returns the square distance between A and B. This is equivalent to getting
+	 * the square length of the vector produced from <code>getDistVec()</code>.
 	 *
 	 * @param A The starting point
 	 * @param B The destination point
@@ -84,8 +83,8 @@ public final class LDVec {
 	}
 
 	/**
-	 * Creates a new vector with the provided X and Y components and zero for
-	 * the Z component.
+	 * Creates a new vector with the provided X and Y components and zero for the
+	 * Z component.
 	 *
 	 * @param x The X component
 	 * @param y The Y component
@@ -251,8 +250,8 @@ public final class LDVec {
 
 	/**
 	 * Adds the provided X, Y, and Z values to the corresponding components in
-	 * this vector, then returns this. This has the effect of translating this
-	 * by the specified amount in each component.
+	 * this vector, then returns this. This has the effect of translating this by
+	 * the specified amount in each component.
 	 *
 	 * @param x The X component to add
 	 * @param y The Y component to add
@@ -309,8 +308,8 @@ public final class LDVec {
 	}
 
 	/**
-	 * Scales all components in this vector by the inverse of the specified
-	 * scale factor, then returns this.
+	 * Scales all components in this vector by the inverse of the specified scale
+	 * factor, then returns this.
 	 *
 	 * @param s The inverse of the scale factor
 	 * @return This
@@ -330,17 +329,17 @@ public final class LDVec {
 	}
 
 	/**
-	 * Returns the cross product of this vector and the specified vector as a
-	 * new vector. The order of arguments is as written, so
-	 * <code>A.cross(B)</code> is equivalent to A × B.
+	 * Returns the cross product of this vector and the specified vector as a new
+	 * vector. The order of arguments is as written, so <code>A.cross(B)</code> is
+	 * equivalent to A × B.
 	 *
 	 * @param v The second vector
 	 * @return The cross product vector
 	 */
 	public LDVec cross(LDVec v) {
 		return new LDVec(data[1] * v.data[2] - data[2] * v.data[1],
-				data[2] * v.data[0] - data[0] * v.data[2],
-				data[0] * v.data[1] - data[1] * v.data[0]);
+						data[2] * v.data[0] - data[0] * v.data[2],
+						data[0] * v.data[1] - data[1] * v.data[0]);
 	}
 
 	/**
@@ -371,9 +370,9 @@ public final class LDVec {
 	 */
 	public LDVec reflect(LDVec n) {
 		return set(
-				(1.0F - 2.0F * n.data[0] * n.data[0]) * data[0] - 2.0F * n.data[0] * n.data[1] * data[1] - 2.0F * n.data[0] * n.data[2] * data[2],
-				-2.0F * n.data[0] * n.data[1] * data[0] + (1.0F - 2.0F * n.data[1] * n.data[1]) * data[1] - 2.0F * n.data[1] * n.data[2] * data[2],
-				-2.0F * n.data[0] * n.data[2] * data[0] - 2.0F * n.data[1] * n.data[2] * data[1] + (1.0F - 2.0F * n.data[2] * n.data[2]) * data[2]);
+						(1.0F - 2.0F * n.data[0] * n.data[0]) * data[0] - 2.0F * n.data[0] * n.data[1] * data[1] - 2.0F * n.data[0] * n.data[2] * data[2],
+						-2.0F * n.data[0] * n.data[1] * data[0] + (1.0F - 2.0F * n.data[1] * n.data[1]) * data[1] - 2.0F * n.data[1] * n.data[2] * data[2],
+						-2.0F * n.data[0] * n.data[2] * data[0] - 2.0F * n.data[1] * n.data[2] * data[1] + (1.0F - 2.0F * n.data[2] * n.data[2]) * data[2]);
 	}
 
 	/**
@@ -406,8 +405,26 @@ public final class LDVec {
 	}
 
 	/**
-	 * Returns this vector as a string in the format "(x,y,z)", where x, y, and
-	 * z are the corresponding components of this vector.
+	 * Returns a copy of this vector as a <code>HDQVec</code>.
+	 *
+	 * @return
+	 */
+	public HDQVec toHDQ() {
+		return new HDQVec(data[0], data[1], data[2]);
+	}
+	
+	/**
+	 * Creates a copy of this, equivalent to calling toLD()
+	 * @return 
+	 */
+	@Override
+	public LDVec clone() {
+		return new LDVec(this);
+	}
+
+	/**
+	 * Returns this vector as a string in the format "(x,y,z)", where x, y, and z
+	 * are the corresponding components of this vector.
 	 *
 	 * @return A string representation of this vector.
 	 */

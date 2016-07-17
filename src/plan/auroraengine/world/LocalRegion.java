@@ -7,10 +7,11 @@ package plan.auroraengine.world;
 
 import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.math.LDRef;
+import java.util.HashSet;
 import java.util.logging.Logger;
 
 /**
- * Denotes a 3D Space on the local level which may be directly interacted with.
+ * Denotes a 3D volume of space which is on the scale of meters.
  * @author Arthur
  */
 public class LocalRegion {
@@ -18,11 +19,13 @@ public class LocalRegion {
 
 	private final LocalRegion parent;
 	private final LDRef toparent;
+	private final HashSet<LocalRegion> children;
 	// private final LocalBoundary[] bounds;
 
 	public LocalRegion(MicroRegion parent, LDRef fromparent) {
 		this.parent = parent;
 		this.toparent = fromparent.invert();
+		this.children = new HashSet<>();
 	}
 
 	public LocalPosition transform(LocalPosition ref) {
