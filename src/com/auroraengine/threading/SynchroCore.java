@@ -32,7 +32,8 @@ public abstract class SynchroCore implements Runnable {
 			looping = false, threading = false;
 	private final Lock lock = new ReentrantLock();
 	private final Condition condition = lock.newCondition();
-
+	private Thread thread;
+	
 	/**
 	 * Creates a new independent thread.
 	 *
@@ -66,8 +67,11 @@ public abstract class SynchroCore implements Runnable {
 	 * @return The Created Thread
 	 */
 	public final Thread start() {
+		if(thread != null && thread.isAlive()) {
+			return null;
+		}
 		halted = false;
-		Thread thread = new Thread(this, this.name);
+		thread = new Thread(this, this.name);
 		thread.start();
 		LOG.log(Level.INFO, "Started New Synchro Thread \"{0}\"", this.name);
 		return thread;
@@ -81,13 +85,20 @@ public abstract class SynchroCore implements Runnable {
 	 * @return The Created Thread
 	 */
 	public final Thread start(int priority) {
+		if(thread != null && thread.isAlive()) {
+			return null;
+		}
 		halted = false;
-		Thread thread = new Thread(this, this.name);
+		thread = new Thread(this, this.name);
 		thread.setPriority(priority);
 		thread.start();
 		LOG.log(Level.INFO,
 				"Started New Synchro Thread \"{0}\" with Priority {1}",
 				new Object[]{this.name, priority});
+		return thread;
+	}
+	
+	public final Thread getThread() {
 		return thread;
 	}
 
@@ -103,7 +114,7 @@ public abstract class SynchroCore implements Runnable {
 				new Object[]{this.name, synchro.name});
 		lock.lock();
 		try {
-			if (synchro.dependent == this && !synchro.getThreading()) {
+			if (synchro.dependent == this && !synchro.getAlive()) {
 				synchro.start(priority);
 				condition.await();
 			}
@@ -128,7 +139,7 @@ public abstract class SynchroCore implements Runnable {
 				new Object[]{this.name, synchro.name});
 		lock.lock();
 		try {
-			if (synchro.dependent == this && synchro.getThreading()) {
+			if (synchro.dependent == this && synchro.getAlive()) {
 				condition.await();
 			}
 		} catch (InterruptedException ex) {
@@ -170,6 +181,17 @@ public abstract class SynchroCore implements Runnable {
 	 */
 	public final boolean getHalted() {
 		return halted;
+	}
+	
+	/**
+	 * Returns true if the thread is still alive, false otherwise.
+	 * This should be called in favour of <code>getThreading()</code> as
+	 * it will react to uncaught exceptions.
+	 * 
+	 * @return 
+	 */
+	public final boolean getAlive() {
+		return thread.isAlive();
 	}
 
 	/**
@@ -213,7 +235,9 @@ public abstract class SynchroCore implements Runnable {
 			initialise();
 			running = true;
 			looping = true;
-			while (!halted && (dependent == null || dependent.getRunning())
+			while (!halted
+					&& (dependent == null
+							|| (dependent.getRunning() && dependent.getAlive()))
 					&& isRunning()) {
 				update();
 			}
