@@ -1,3 +1,6 @@
 package com.auroraengine.opengl.gui;
 
-public class GUIObject {}
+public abstract class GUIObject {
+	public abstract void renderOpaque();
+	public abstract void renderTranslucent();
+}

@@ -60,4 +60,7 @@ public interface GLWindow extends GLObject {
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
+	
+	public int getWidth();
+	public int getHeight();
 }

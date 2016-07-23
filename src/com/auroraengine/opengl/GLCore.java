@@ -8,7 +8,10 @@ package com.auroraengine.opengl;
 import com.auroraengine.client.ClientCore;
 import com.auroraengine.debug.AuroraException;
 import com.auroraengine.debug.AuroraLogs;
+import com.auroraengine.opengl.viewport.FullScreenViewport;
+import com.auroraengine.opengl.viewport.Viewport;
 import com.auroraengine.threading.SynchroCore;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,10 +37,16 @@ public class GLCore extends SynchroCore {
 		super("GL Core", core);
 		this.core = core;
 		this.window = new LWJGLWindow(core.getSession(), core.getProperties());
+		this.viewports = new ArrayList<>(1);
+		Viewport full = new FullScreenViewport(window);
+		full.setActive(true);
+		viewports.add(full);
 	}
 	private final ClientCore core;
 	private final GLWindow window;
 
+	private final ArrayList<Viewport> viewports;
+	
 	@Override
 	protected void initialise() throws GLException {
 		LOG.info("Initialising");
@@ -52,7 +61,16 @@ public class GLCore extends SynchroCore {
 
 	@Override
 	protected void update() throws GLException {
+		// Required to reset the view
 		window.update();
+		
+		// Then each viewport will be drawn to
+		// TODO: Implement priority - e.g. texture viewports
+		for(Viewport v : viewports) {
+			if(v.isActive()) {
+				// Some form of render routine required.
+			}
+		}
 	}
 
 	@Override

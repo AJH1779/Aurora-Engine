@@ -1,4 +1,4 @@
-package com.auroraengine.entity.auroraengine;
+package com.auroraengine.entity;
 
 import com.auroraengine.debug.AuroraLogs;
 import java.util.logging.Logger;
