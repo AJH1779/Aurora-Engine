@@ -27,22 +27,20 @@ public abstract class SynchroCore implements Runnable {
 	private static final Logger LOG = AuroraLogs.getLogger(SynchroCore.class);
 
 	private final String name;
-	private final SynchroCore dependent;
+	private final SynchroCore master;
 	private volatile boolean halted = false, running = false,
 			looping = false, threading = false;
 	private final Lock lock = new ReentrantLock();
 	private final Condition condition = lock.newCondition();
 	private Thread thread;
-	
+
 	/**
-	 * Creates a new independent thread.
+	 * Creates a new inmaster thread.
 	 *
 	 * @param name
 	 */
 	public SynchroCore(String name) {
-		this.name = name;
-		dependent = null;
-		LOG.log(Level.INFO, "New Independent Synchro \"{0}\" Created", name);
+		this(name, null);
 	}
 
 	/**
@@ -50,14 +48,26 @@ public abstract class SynchroCore implements Runnable {
 	 * running.
 	 *
 	 * @param name
-	 * @param dependent
+	 * @param master
 	 */
-	public SynchroCore(String name, SynchroCore dependent) {
+	public SynchroCore(String name, SynchroCore master) {
 		this.name = name;
-		this.dependent = dependent;
-		LOG.log(Level.INFO,
-				"New Dependent Synchro \"{0}\" Created, dependent on Synchro \"{1}\"",
-				new Object[]{name, dependent});
+		this.master = master;
+		if (master != null) {
+			LOG.log(Level.INFO,
+					"New Dependent Synchro \"{0}\" Created, master on Synchro \"{1}\"",
+					new Object[]{name, master});
+		} else {
+			LOG.log(Level.INFO, "New Inmaster Synchro \"{0}\" Created", name);
+		}
+	}
+	
+	/**
+	 * 
+	 * @return 
+	 */
+	public final SynchroCore getMaster() {
+		return master;
 	}
 
 	/**
@@ -67,7 +77,7 @@ public abstract class SynchroCore implements Runnable {
 	 * @return The Created Thread
 	 */
 	public final Thread start() {
-		if(thread != null && thread.isAlive()) {
+		if (thread != null && thread.isAlive()) {
 			return null;
 		}
 		halted = false;
@@ -85,7 +95,7 @@ public abstract class SynchroCore implements Runnable {
 	 * @return The Created Thread
 	 */
 	public final Thread start(int priority) {
-		if(thread != null && thread.isAlive()) {
+		if (thread != null && thread.isAlive()) {
 			return null;
 		}
 		halted = false;
@@ -97,7 +107,7 @@ public abstract class SynchroCore implements Runnable {
 				new Object[]{this.name, priority});
 		return thread;
 	}
-	
+
 	public final Thread getThread() {
 		return thread;
 	}
@@ -114,7 +124,7 @@ public abstract class SynchroCore implements Runnable {
 				new Object[]{this.name, synchro.name});
 		lock.lock();
 		try {
-			if (synchro.dependent == this && !synchro.getAlive()) {
+			if (synchro.master == this && !synchro.getAlive()) {
 				synchro.start(priority);
 				condition.await();
 			}
@@ -139,7 +149,7 @@ public abstract class SynchroCore implements Runnable {
 				new Object[]{this.name, synchro.name});
 		lock.lock();
 		try {
-			if (synchro.dependent == this && synchro.getAlive()) {
+			if (synchro.master == this && synchro.getAlive()) {
 				condition.await();
 			}
 		} catch (InterruptedException ex) {
@@ -182,16 +192,16 @@ public abstract class SynchroCore implements Runnable {
 	public final boolean getHalted() {
 		return halted;
 	}
-	
+
 	/**
-	 * Returns true if the thread is still alive, false otherwise.
-	 * This should be called in favour of <code>getThreading()</code> as
-	 * it will react to uncaught exceptions.
-	 * 
-	 * @return 
+	 * Returns true if the thread is still alive, false otherwise. This should
+	 * be called in favour of <code>getThreading()</code> as it will react to
+	 * uncaught exceptions.
+	 *
+	 * @return
 	 */
 	public final boolean getAlive() {
-		return thread.isAlive();
+		return thread != null ? thread.isAlive() : false;
 	}
 
 	/**
@@ -229,15 +239,15 @@ public abstract class SynchroCore implements Runnable {
 		try {
 			halted = false;
 			threading = true;
-			if (dependent != null) {
-				dependent.synchroClose();
+			if (master != null) {
+				master.synchroClose();
 			}
 			initialise();
 			running = true;
 			looping = true;
 			while (!halted
-					&& (dependent == null
-							|| (dependent.getRunning() && dependent.getAlive()))
+					&& (master == null
+					|| (master.getRunning() && master.getAlive()))
 					&& isRunning()) {
 				update();
 			}
@@ -254,8 +264,8 @@ public abstract class SynchroCore implements Runnable {
 				LOG.log(Level.SEVERE, "Failed to close cleanly due to Exception: {0}", ex);
 			}
 			threading = false;
-			if (dependent != null) {
-				dependent.synchroClose();
+			if (master != null) {
+				master.synchroClose();
 			}
 		}
 	}

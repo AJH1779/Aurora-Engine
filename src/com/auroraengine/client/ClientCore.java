@@ -5,6 +5,7 @@
  */
 package com.auroraengine.client;
 
+import com.auroraengine.data.Client;
 import com.auroraengine.data.ProgramProperties;
 import com.auroraengine.debug.AuroraException;
 import com.auroraengine.debug.AuroraLogs;
@@ -24,13 +25,10 @@ import java.util.logging.Logger;
  * @author Arthur John Hills
  * @version 0.0.1 Development
  */
+@Client
 public class ClientCore extends SynchroCore {
 
 	private static final Logger LOG = AuroraLogs.getLogger(ClientCore.class);
-
-	private final ProgramProperties properties;
-	private final Session session;
-	private final GLCore glcore;
 
 	/**
 	 * Creates a client core with the specified program properties and the
@@ -41,12 +39,16 @@ public class ClientCore extends SynchroCore {
 	 * @throws AuroraException
 	 */
 	public ClientCore(ProgramProperties properties, Session session)
-					throws AuroraException {
+			throws AuroraException {
 		super("Client Core");
 		this.properties = properties;
 		this.session = session;
 		this.glcore = new GLCore(this);
 	}
+
+	private final ProgramProperties properties;
+	private final Session session;
+	private final GLCore glcore;
 
 	/**
 	 * Returns the program properties.
@@ -83,10 +85,9 @@ public class ClientCore extends SynchroCore {
 
 	@Override
 	protected void update() throws ClientException {
-		// TODO: Include Thread health checking
-		if (!glcore.getRunning()) {
-			// Try to recover it somehow or call it as a failure.
-		}
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException ex) {}
 	}
 
 	@Override
@@ -94,7 +95,6 @@ public class ClientCore extends SynchroCore {
 		LOG.info("Shutting Down");
 		waitForStop(glcore);
 		LOG.info("Shut Down");
-		System.exit(0);
 	}
 
 	@Override

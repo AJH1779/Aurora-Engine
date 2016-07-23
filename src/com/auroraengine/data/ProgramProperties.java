@@ -14,7 +14,6 @@ import java.util.logging.Logger;
  * Holds the title, version, author, and file data of the program.
  * @author Arthur
  */
-@Client
 public class ProgramProperties {
 
 	private static final Logger LOG = AuroraLogs.getLogger(ProgramProperties.class);
@@ -46,11 +45,6 @@ public class ProgramProperties {
 		LOG.log(Level.INFO, "Default Directory is {0}", file.getAbsolutePath());
 		return file;
 	}
-
-	private final String prog_name, prog_version;
-	@Client
-	private final File prog_dir, spec_dir;
-
 	/**
 	 * Creates a new properties file for the specified program, named and
 	 * versioned.
@@ -64,6 +58,11 @@ public class ProgramProperties {
 		this.prog_dir = new File(APPDATA, "." + prog_name);
 		this.spec_dir = new File(prog_dir, "prog_version");
 	}
+
+	private final String prog_name, prog_version;
+	@Client
+	private final File prog_dir, spec_dir;
+
 
 	/**
 	 * Returns the name of the program.

@@ -19,17 +19,29 @@ public interface GLObject {
 	 */
 	public void load() throws ClientException;
 	/**
-	 * Must be called after destroy() has been used, unless otherwise specified.
-	 * Unloads any resources connected to the object, can be called by any thread.
+	 * Can be called before destroy() is used, removing the data stored on the
+	 * non-GL side. load() must be called before create() may be used again.
 	 * @throws ClientException 
 	 */
 	public void unload() throws ClientException;
+	
+	/**
+	 * Returns true if and only if the object can be created using create().
+	 * @return True if the object can be created with create().
+	 */
+	public boolean isLoaded();
 	
 	/**
 	 * Must be called to make this object usable by the GL thread.
 	 * @throws GLException 
 	 */
 	public void create() throws GLException;
+	/**
+	 * Returns true if and only if the object can be modified using update() and
+	 * destroyed using destroy()
+	 * @return
+	 */
+	public boolean isCreated();
 	/**
 	 * Must be called by the GL context whenever the object changes.
 	 * @throws GLException 
