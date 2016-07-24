@@ -58,15 +58,16 @@ public abstract class Viewport {
 
 	public void render() throws GLException {
 		setViewport();
-		
+
 		gui.renderOpaque();
-		
+
 		if(camera != null) {
 			// TODO: Render out from Camera.
+			camera.render(this);
 		}
-		
+
 		gui.renderTranslucent();
-		
+
 		try {
 			lock.lock();
 			condition.signalAll();

@@ -28,16 +28,18 @@ public class GLCore extends SynchroCore {
 	private static final Logger LOG = AuroraLogs.getLogger(GLCore.class);
 
 	/**
-	 * The main constructor which prepares the core using the provided client.
-	 * It is expected that interaction with other threads will happen through the
+	 * The main constructor which prepares the core using the provided client. It
+	 * is expected that interaction with other threads will happen through the
 	 * ClientCore thread primarily.
-	 * @param core 
+	 *
+	 * @param core
 	 */
 	public GLCore(ClientCore core) {
 		super("GL Core", core);
 		this.core = core;
 		this.window = new LWJGLWindow(core.getSession(), core.getProperties());
 		this.viewports = new ArrayList<>(1);
+
 		Viewport full = new FullScreenViewport(window);
 		full.setActive(true);
 		viewports.add(full);
@@ -46,7 +48,7 @@ public class GLCore extends SynchroCore {
 	private final GLWindow window;
 
 	private final ArrayList<Viewport> viewports;
-	
+
 	@Override
 	protected void initialise() throws GLException {
 		LOG.info("Initialising");
@@ -63,14 +65,16 @@ public class GLCore extends SynchroCore {
 	protected void update() throws GLException {
 		// Required to reset the view
 		window.update();
-		
+
 		// Then each viewport will be drawn to
 		// TODO: Implement priority - e.g. texture viewports
-		for(Viewport v : viewports) {
-			if(v.isActive()) {
-				// Some form of render routine required.
+		viewports.stream().filter((v) -> v.isActive()).forEach((v) -> {
+			try {
+				v.render();
+			} catch (GLException ex) {
+				LOG.log(Level.WARNING, "Failed to render the viewport: {0}", v.toString());
 			}
-		}
+		}); // Some form of render routine required.
 	}
 
 	@Override
