@@ -1,6 +1,7 @@
 package com.auroraengine.entity;
 
 import com.auroraengine.debug.AuroraLogs;
+import plan.auroraengine.world.LocalRegion;
 import java.util.logging.Logger;
 import plan.auroraengine.world.LocalPosition;
 import plan.auroraengine.world.LocalVelocity;
@@ -28,4 +29,12 @@ public class Entity {
 	}
 	private final LocalPosition pos, prev_pos;
 	private final LocalVelocity mom, prev_mom;
+	
+	public LocalRegion getRegion() {
+		return prev_pos.getRegion();
+	}
+	
+	public LocalPosition getPosition() {
+		return new LocalPosition(prev_pos);
+	}
 }

@@ -5,8 +5,11 @@
  */
 package plan.auroraengine.world;
 
+import com.auroraengine.camera.Camera;
+import com.auroraengine.camera.Frustrum;
 import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.math.LDRef;
+import com.auroraengine.opengl.viewport.Viewport;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
@@ -46,5 +49,12 @@ public class LocalRegion {
 
 	public LocalPosition toParent(LocalPosition ref) {
 		return new LocalPosition(parent, ref.getPosition().toLD().multiplyGlobally(toparent));
+	}
+
+	public void render(Camera camera, Viewport view, Frustrum frustrum) {
+		
+		// TODO: Make the drawing work properly.
+		// Draw terrain first as it is the most simple geometry typically
+		
 	}
 }

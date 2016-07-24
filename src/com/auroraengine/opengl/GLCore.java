@@ -74,7 +74,7 @@ public class GLCore extends SynchroCore {
 			} catch (GLException ex) {
 				LOG.log(Level.WARNING, "Failed to render the viewport: {0}", v.toString());
 			}
-		}); // Some form of render routine required.
+		});
 	}
 
 	@Override
