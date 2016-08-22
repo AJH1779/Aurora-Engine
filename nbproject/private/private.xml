@@ -2,16 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/gui/GUI.java</file>
-            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/entity/Entity.java</file>
-            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/viewport/Viewport.java</file>
-            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/gui/GUIObject.java</file>
-            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/camera/Camera.java</file>
-            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/viewport/FullScreenViewport.java</file>
-            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/GLWindow.java</file>
-            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/GLCore.java</file>
-            <file>file:/C:/Users/ajh17/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/LWJGLWindow.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

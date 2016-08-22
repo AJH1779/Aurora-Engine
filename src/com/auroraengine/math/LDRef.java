@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author Arthur
  */
-public final class LDRef {
+public final class LDRef implements Cloneable {
 
 	private static final Logger LOG = Logger.getLogger(LDRef.class.getName());
 	private static final float[] IDENTITY = new float[]{1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f};
@@ -438,7 +438,7 @@ public final class LDRef {
 
 	/**
 	 * Returns the position vector transformed to inside this reference frame.
-	 * This is equivalent to calling <code>transform(vec, true)<\code>.
+	 * This is equivalent to calling <code>transform(vec, true)</code>.
 	 *
 	 * @param vec The global position vector
 	 * @return The local position vector
@@ -564,5 +564,10 @@ public final class LDRef {
 		int hash = 5;
 		hash = 79 * hash + Arrays.hashCode(this.dat);
 		return hash;
+	}
+
+	@Override
+	public LDRef clone() {
+		return new LDRef(this);
 	}
 }

@@ -7,6 +7,7 @@ package com.auroraengine.math;
 
 import java.math.BigDecimal;
 import static java.math.BigDecimal.*;
+import static com.auroraengine.math.HDQVec.CONTEXT;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
@@ -165,7 +166,7 @@ public final class HDQRef {
 		dat[0] = ang.cos().add(ang.X().multiply(ang.X()).multiply(ONE.subtract(ang.cos())));
 		dat[1] = ang.Y().multiply(ang.X()).multiply(ONE.subtract(ang.cos())).add(ang.X().multiply(ang.sin()));
 		dat[2] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(ang.Y().multiply(ang.sin()));
-		
+
 		dat[4] = ang.X().multiply(ang.Y()).multiply(ONE.subtract(ang.cos())).subtract(ang.Z().multiply(ang.sin()));
 		dat[5] = ang.cos().add(ang.Y().multiply(ang.Y()).multiply(ONE.subtract(ang.cos())));
 		dat[6] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang.X().multiply(ang.sin()));
@@ -173,7 +174,7 @@ public final class HDQRef {
 		dat[8] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang.Y().multiply(ang.sin()));
 		dat[9] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(ang.X().multiply(ang.sin()));
 		dat[10] = ang.cos().add(ang.Z().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())));
-		
+
 		dat[15] = ONE;
 		modified = true;
 		return this;
@@ -350,7 +351,7 @@ public final class HDQRef {
 		r[6] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang.Y().multiply(ang.sin()));
 		r[7] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(ang.X().multiply(ang.sin()));
 		r[8] = ang.cos().add(ang.Z().multiply(ang.Z().multiply((ONE.subtract(ang.cos())))));
-		
+
 		d[0] = r[0].multiply(dat[0]).add(r[3].multiply(dat[1])).add(r[6].multiply(dat[2]));
 		d[1] = r[1].multiply(dat[0]).add(r[4].multiply(dat[1])).add(r[7].multiply(dat[2]));
 		d[2] = r[2].multiply(dat[0]).add(r[5].multiply(dat[1])).add(r[8].multiply(dat[2]));
@@ -453,9 +454,9 @@ public final class HDQRef {
 	 */
 	public HDQVec transform(HDQVec vec, boolean position) {
 		return new HDQVec(
-						(dat[0].multiply(vec.X())).add(dat[4].multiply(vec.Y())).add(dat[8].multiply(vec.Z())).add(position ? dat[12] : ZERO),
-						(dat[1].multiply(vec.X())).add(dat[5].multiply(vec.Y())).add(dat[9].multiply(vec.Z())).add(position ? dat[13] : ZERO),
-						(dat[2].multiply(vec.X())).add(dat[6].multiply(vec.Y())).add(dat[10].multiply(vec.Z())).add(position ? dat[14] : ZERO)
+						(dat[0].multiply(vec.X(), CONTEXT)).add(dat[4].multiply(vec.Y(), CONTEXT)).add(dat[8].multiply(vec.Z(), CONTEXT)).add(position ? dat[12] : ZERO, CONTEXT),
+						(dat[1].multiply(vec.X(), CONTEXT)).add(dat[5].multiply(vec.Y(), CONTEXT)).add(dat[9].multiply(vec.Z(), CONTEXT)).add(position ? dat[13] : ZERO, CONTEXT),
+						(dat[2].multiply(vec.X(), CONTEXT)).add(dat[6].multiply(vec.Y(), CONTEXT)).add(dat[10].multiply(vec.Z(), CONTEXT)).add(position ? dat[14] : ZERO, CONTEXT)
 		);
 	}
 
@@ -493,7 +494,7 @@ public final class HDQRef {
 
 	/**
 	 * Returns a copy of this reference frame in a <code>HDRef</code> object.
-	 * @return 
+	 * @return
 	 */
 	public HDRef toHD() {
 		double[] d = new double[16];
@@ -502,7 +503,7 @@ public final class HDQRef {
 		}
 		return new HDRef(d);
 	}
-	
+
 	/**
 	 * Returns a copy of this reference frame.
 	 *

@@ -526,10 +526,10 @@ public final class HDQVec {
 	public HDQVec toHDQ() {
 		return new HDQVec(this);
 	}
-	
+
 	/**
 	 * Creates a copy of this, equivalent to calling toLD()
-	 * @return 
+	 * @return
 	 */
 	@Override
 	public HDQVec clone() {

@@ -9,9 +9,8 @@ import com.auroraengine.entity.Entity;
 import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.shaders.ShaderLibrary;
 import com.auroraengine.opengl.viewport.Viewport;
+import com.auroraengine.world.LocalPosition;
 import org.lwjgl.opengl.GL11;
-import plan.auroraengine.world.LocalPosition;
-import plan.auroraengine.world.LocalVelocity;
 
 /**
  *
@@ -21,10 +20,6 @@ public class Camera extends Entity {
 
 	public Camera(LocalPosition pos) {
 		super(pos);
-	}
-
-	public Camera(LocalPosition pos, LocalVelocity vel) {
-		super(pos, vel);
 	}
 	private ShaderLibrary shader_library;
 
@@ -38,14 +33,19 @@ public class Camera extends Entity {
 		// Intended to draw everything in its viewport.
 		// Needs a way of getting things in the correct priority order.
 		Frustrum frustrum = calculateFrustrum(view);
-		
-		GL11.glMultMatrix(this.getPosition().getPosition().toLD().invert().buffer());
-		
-		this.getRegion().render(this, view, frustrum);
+
+		// GL11.glMultMatrix(this.getPreviousPosition().getPosition().toLD().invert().buffer());
+
+		// this.getRegion().render(this, view, frustrum);
 	}
 
 	private Frustrum calculateFrustrum(Viewport view) {
 		// TODO: Make frustrum
 		throw new UnsupportedOperationException("Not Yet Implementeds");
+	}
+
+	@Override
+	public void update(double delt) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

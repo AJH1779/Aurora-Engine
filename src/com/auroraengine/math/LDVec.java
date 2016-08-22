@@ -22,6 +22,61 @@ public final class LDVec implements Cloneable {
 
 	private static final Logger LOG = AuroraLogs.getLogger(LDVec.class);
 	// The Static Methods
+	private static final float EPSILON = 1E-7f;
+
+	public static boolean getIntersecting(LDVec A, LDVec dA, LDVec B, LDVec dB) {
+		return getIntersecting(A, dA, B, dB,
+						EPSILON * Math.max(dA.getSqrLen(), dB.getSqrLen()));
+	}
+
+	public static boolean getIntersecting(LDVec A, LDVec dA, LDVec B, LDVec dB, float eps) {
+		LDVec[] va = getClosestVecs(A, dA, B, dB);
+		return va[0].negTranslate(va[1]).getSqrLen() < eps * eps;
+	}
+
+	public static boolean getHasNearest(LDVec A, LDVec dA, LDVec B, LDVec dB) {
+		float[] fa = getClosest(A, dA, B, dB);
+		return fa[0] > 0f && fa[0] < 1f && fa[1] > 0f && fa[1] < 1f;
+	}
+
+	public static float[] getClosest(LDVec A, LDVec dA, LDVec B, LDVec dB) {
+		LDVec C = A.clone().negTranslate(B);
+		float da2 = dA.getSqrLen();
+		float db2 = dB.getSqrLen();
+		float dadb = dA.dot(dB);
+		float cda = C.dot(dA);
+		float cdb = C.dot(dB);
+
+		float eps = EPSILON * Math.min(da2, db2);
+
+		float a = -(db2 * cda + dadb * dadb) / (da2 * db2 + dadb * cdb);
+		float b;
+
+		if (a > 1f) {
+			a = 1f;
+			b = (cdb - dadb) / db2;
+		} else if (a < 0f) {
+			a = 0f;
+			b = cdb / db2;
+		} else {
+			b = (da2 * cdb + dadb * dadb) / (da2 * db2 + dadb * cda);
+			if (b > 1f) {
+				b = 1f;
+				a = (dadb - cda) / da2;
+			} else if (b < 0f) {
+				b = 0f;
+				a = -cda / da2;
+			}
+		}
+
+		return new float[]{a, b};
+	}
+
+	public static LDVec[] getClosestVecs(LDVec A, LDVec dA, LDVec B, LDVec dB) {
+		float[] fa = getClosest(A, dA, B, dB);
+		return new LDVec[]{dA.clone().scale(fa[0]).translate(A),
+			dB.clone().scale(fa[1]).translate(B)};
+	}
 
 	/**
 	 * Returns the average of the vectors, that is the sum of all vectors divided
@@ -412,10 +467,11 @@ public final class LDVec implements Cloneable {
 	public HDQVec toHDQ() {
 		return new HDQVec(data[0], data[1], data[2]);
 	}
-	
+
 	/**
 	 * Creates a copy of this, equivalent to calling toLD()
-	 * @return 
+	 *
+	 * @return
 	 */
 	@Override
 	public LDVec clone() {
