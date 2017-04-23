@@ -49,7 +49,7 @@ public class IOUtils {
 					throws AuroraException {
 		String data = null;
 		try (Scanner s = new Scanner(f)) {
-			data = s.useDelimiter("\\0").next(); // TODO: Verify the regex
+			data = s.useDelimiter("\\Z").next();
 		} catch (FileNotFoundException | NoSuchElementException ex) {
 			LOG.log(Level.WARNING, "Failed to read file: {0}", f.getAbsolutePath());
 			throw new AuroraException(ex);
