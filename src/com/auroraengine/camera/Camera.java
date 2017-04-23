@@ -1,49 +1,49 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 LittleRover
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine.camera;
 
 import com.auroraengine.entity.Entity;
-import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.shaders.ShaderLibrary;
-import com.auroraengine.opengl.viewport.Viewport;
 import com.auroraengine.world.LocalPosition;
-import org.lwjgl.opengl.GL11;
+import java.util.logging.Logger;
 
 /**
  *
- * @author ajh17
+ * @author LittleRover
  */
 public class Camera extends Entity {
+	private static final Logger LOG = Logger.getLogger(Camera.class.getName());
 
+	/**
+	 * Creates a new camera at the specified position.
+	 *
+	 * TODO: Implement this properly as an entity.
+	 *
+	 * TODO: Implement relevant constructors.
+	 *
+	 * @param pos The position of the camera
+	 */
 	public Camera(LocalPosition pos) {
 		super(pos);
 	}
 	private ShaderLibrary shader_library;
 
-	public void switchTo(Viewport view) throws GLException {
-		// Calls the GL routines and perhaps the shader library associated with
-		// this viewport.
-
-	}
-
-	public void render(Viewport view) throws GLException {
-		// Intended to draw everything in its viewport.
-		// Needs a way of getting things in the correct priority order.
-		Frustrum frustrum = calculateFrustrum(view);
-
-		// GL11.glMultMatrix(this.getPreviousPosition().getPosition().toLD().invert().buffer());
-
-		// this.getRegion().render(this, view, frustrum);
-	}
-
-	private Frustrum calculateFrustrum(Viewport view) {
-		// TODO: Make frustrum
-		throw new UnsupportedOperationException("Not Yet Implementeds");
-	}
-
+	// TODO: Frustrum
+	// TODO: Camera
 	@Override
 	public void update(double delt) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

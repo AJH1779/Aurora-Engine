@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 LittleRover
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine.math;
 
@@ -9,6 +20,7 @@ import java.math.BigDecimal;
 import static java.math.BigDecimal.*;
 import static com.auroraengine.math.HDQVec.*;
 import java.math.MathContext;
+// TODO: Update to be of the same structure as LD and HD variants.
 
 /**
  * <code>HDAng</code>s are modifiable objects that denote a rotation in
@@ -17,11 +29,11 @@ import java.math.MathContext;
  * original.
  *
  * WARNING: This does not currently have the required accuracy to be useful.
- * 
- * @author Arthur
+ *
+ * @author LittleRover
  */
 public final class HDQAng {
-	
+
 	/**
 	 * Creates a new zero rotation object.
 	 */
@@ -41,9 +53,9 @@ public final class HDQAng {
 	 * Creates a new rotation object around the specified vector by the provided
 	 * angle, which should be normalised.
 	 *
-	 * @param x The x vector component
-	 * @param y The y vector component
-	 * @param z The z vector component
+	 * @param x   The x vector component
+	 * @param y   The y vector component
+	 * @param z   The z vector component
 	 * @param ang The rotation angle in radians
 	 */
 	public HDQAng(BigDecimal ang, BigDecimal x, BigDecimal y, BigDecimal z) {
@@ -79,6 +91,7 @@ public final class HDQAng {
 	 * @param x The new X component
 	 * @param y The new Y component
 	 * @param z The new Z component
+	 *
 	 * @return This
 	 */
 	public HDQAng set(BigDecimal x, BigDecimal y, BigDecimal z) {
@@ -91,6 +104,7 @@ public final class HDQAng {
 	 * provided vector, then returns this.
 	 *
 	 * @param v The vector to copy
+	 *
 	 * @return This
 	 */
 	public HDQAng set(HDQVec vec) {
@@ -102,6 +116,7 @@ public final class HDQAng {
 	 * Sets the rotation angle to the specified amount, then returns this.
 	 *
 	 * @param ang The new rotation angle
+	 *
 	 * @return This
 	 */
 	public HDQAng set(BigDecimal ang) {
@@ -117,10 +132,11 @@ public final class HDQAng {
 	 * Sets the X, Y, and Z components of the rotation vector to the provided
 	 * values and the rotation angle to the specified amount, then returns this.
 	 *
-	 * @param x The new X component
-	 * @param y The new Y component
-	 * @param z The new Z component
+	 * @param x   The new X component
+	 * @param y   The new Y component
+	 * @param z   The new Z component
 	 * @param ang The new rotation angle
+	 *
 	 * @return This
 	 */
 	public HDQAng set(BigDecimal ang, BigDecimal x, BigDecimal y, BigDecimal z) {
@@ -133,8 +149,9 @@ public final class HDQAng {
 	 * provided vector and the rotation angle to the specified amount, then
 	 * returns this.
 	 *
-	 * @param v The vector to copy
+	 * @param v   The vector to copy
 	 * @param ang The new rotation angle
+	 *
 	 * @return This
 	 */
 	public HDQAng set(BigDecimal ang, HDQVec vec) {
@@ -147,6 +164,7 @@ public final class HDQAng {
 	 * then returns this.
 	 *
 	 * @param ang The angle to copy
+	 *
 	 * @return This
 	 */
 	public HDQAng set(HDQAng ang) {

@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 LittleRover
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine;
 
@@ -24,53 +35,80 @@ import java.util.logging.Logger;
  * implemented or extended and serves solely as a carrier of the static methods
  * relating to the initialisation of the program.
  *
- * @author A.J.H.
+ * TODO: Delete and Replace
+ *
+ * @author LittleRover
  * @version 0.0.1 Development
  */
 public final class Main {
 
-	private static final Logger LOG = AuroraLogs.getLogger(Main.class);
+	private static final Logger LOG = AuroraLogs.getLogger(Main.class.getName());
+
+	/**
+	 * Outputs the commands from the javadoc of start().
+	 *
+	 * @see Main#start(java.lang.String[], java.util.function.Supplier,
+	 * java.util.function.Supplier, java.util.function.Function)
+	 */
+	@SuppressWarnings("UseOfSystemOutOrSystemErr")
+	public static void help() {
+		// TODO: Print the javadoc for the start command
+		// TODO: Have as a jar packed file containing this output in detail.
+		System.out.println(
+						"-c | --client | Starts a client.\n" +
+						"-s | --server | Starts a server.\n" +
+						"-h | --help   | Cancels loading of the program and outputs the help."
+		);
+	}
 
 	/**
 	 * Creates a test environment using the specified arguments. The meaning of
-	 * the arguments are defined in the javadoc for <code>start()</code>, as
-	 * well as the output for <code>help()</code>.
+	 * the arguments are defined in the javadoc for <code>start()</code>, as well
+	 * as the output for <code>help()</code>.
 	 *
 	 * @param args The arguments to run the program with.
+	 *
 	 * @see Main#start(java.lang.String[], java.util.function.Supplier,
 	 * java.util.function.Supplier, java.util.function.Function)
 	 */
 	public static void main(String[] args) {
-		ProgramProperties properties = new ProgramProperties("test", AURORA_CORE_VERSION);
+		ProgramProperties properties = new ProgramProperties("test",
+																												 AURORA_CORE_VERSION);
 		start(args,
-				// The client creation function:
-				() -> {
-					try {
-						return new ClientCore(properties, new Session("test_user", properties));
-					} catch (AuroraException ex) {
-						LOG.log(Level.SEVERE, "Exception in formation of Properties or Client: {0}", ex);
-						return null;
-					}
-				},
-				// The server creation function
-				() -> {
-					try {
-						return new ServerCore("Test Server", properties);
-					} catch (ServerException ex) {
-						LOG.log(Level.SEVERE, "Exception in formation of Properties or Server: {0}", ex);
-						return null;
-					}
-				},
-				// The server creation function using an existing client.
-				(client) -> {
-					try {
-						return new ServerCore("Test Server on Client",
-								client == null ? new ProgramProperties("test", AURORA_CORE_VERSION) : client.getProperties(), client);
-					} catch (ServerException ex) {
-						LOG.log(Level.SEVERE, "Exception in formation of Server: {0}", ex);
-						return null;
-					}
-				});
+					// The client creation function:
+					() -> {
+						try {
+							return new ClientCore(properties, new Session("test_user",
+																														properties));
+						} catch (AuroraException ex) {
+							LOG.log(Level.SEVERE,
+											"Exception in formation of Properties or Client: {0}", ex);
+							return null;
+						}
+					},
+					// The server creation function
+					() -> {
+						try {
+							return new ServerCore("Test Server", properties);
+						} catch (ServerException ex) {
+							LOG.log(Level.SEVERE,
+											"Exception in formation of Properties or Server: {0}", ex);
+							return null;
+						}
+					},
+					// The server creation function using an existing client.
+					(client) -> {
+						try {
+							return new ServerCore("Test Server on Client",
+																		client == null ?
+																		new ProgramProperties("test",
+																													AURORA_CORE_VERSION) :
+																		client.getProperties(), client);
+						} catch (ServerException ex) {
+							LOG.log(Level.SEVERE, "Exception in formation of Server: {0}", ex);
+							return null;
+						}
+					});
 	}
 
 	/**
@@ -84,13 +122,14 @@ public final class Main {
 	 *
 	 * -h | --help | Cancels loading of the program and outputs the help.
 	 *
-	 * @param args The arguments
-	 * @param client The supplier of the client core
-	 * @param server The supplier of the independent server core
+	 * @param args      The arguments
+	 * @param client    The supplier of the client core
+	 * @param server    The supplier of the independent server core
 	 * @param dependent The supplier of the dependent server core
 	 */
 	public static void start(String[] args, Supplier<ClientCore> client,
-			Supplier<ServerCore> server, Function<ClientCore, ServerCore> dependent) {
+													 Supplier<ServerCore> server,
+													 Function<ClientCore, ServerCore> dependent) {
 		boolean fatal_error = false, runclient = false, runserver = false;
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].startsWith("--")) {
@@ -107,7 +146,8 @@ public final class Main {
 						return;
 					default:
 						LOG.log(Level.SEVERE,
-								"Provided argument \"{0}\" not recognised!", args[i]);
+										"Provided argument {0} not recognised: {1}",
+										new Object[]{i, args[i]});
 						fatal_error = true;
 				}
 			}
@@ -127,7 +167,7 @@ public final class Main {
 		}
 		if (fatal_error) {
 			LOG.log(Level.SEVERE,
-					"Check the raised errors to correctly start this program.");
+							"Check the raised errors to correctly start this program.");
 		} else if (runclient && runserver) {
 			ClientCore c = client.get();
 			c.start();
@@ -138,21 +178,6 @@ public final class Main {
 		} else {
 			client.get().start();
 		}
-	}
-
-	/**
-	 * Outputs the commands from the javadoc of start().
-	 *
-	 * @see Main#start(java.lang.String[], java.util.function.Supplier,
-	 * java.util.function.Supplier, java.util.function.Function)
-	 */
-	public static void help() {
-		// TODO: Print the javadoc for the start command
-		System.out.println(
-				"-c | --client | Starts a client.\n"
-				+ "-s | --server | Starts a server.\n"
-				+ "-h | --help   | Cancels loading of the program and outputs the help."
-		);
 	}
 
 	private Main() {

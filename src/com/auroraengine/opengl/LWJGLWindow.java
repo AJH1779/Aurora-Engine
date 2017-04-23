@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 LittleRover
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine.opengl;
 
@@ -18,10 +29,11 @@ import org.lwjgl.opengl.GL11;
 
 /**
  *
- * @author Arthur
+ * @author LittleRover
  */
 public class LWJGLWindow implements GLWindow {
-	private static final Logger LOG = AuroraLogs.getLogger(LWJGLWindow.class);
+	private static final Logger LOG = AuroraLogs.getLogger(LWJGLWindow.class
+					.getName());
 
 	/**
 	 * Creates a window using the native LWJGL window package, using the specified
@@ -47,7 +59,8 @@ public class LWJGLWindow implements GLWindow {
 	}
 
 	@Override
-	public void create() throws GLException {
+	public void create()
+					throws GLException {
 		LOG.info("Creating new LWJGL Window.");
 		try {
 			updateDisplay();
@@ -55,7 +68,7 @@ public class LWJGLWindow implements GLWindow {
 		} catch (LWJGLException ex) {
 			throw new GLException(ex);
 		}
-		
+
 		LOG.info("LWJGL Window successfully created.");
 		iscreated = true;
 
@@ -64,11 +77,13 @@ public class LWJGLWindow implements GLWindow {
 		LOG.warning("Still using the old GL system.");
 	}
 
-	private void updateDisplay() throws LWJGLException, GLException {
+	private void updateDisplay()
+					throws LWJGLException, GLException {
 		LOG.info("Updating the Display using the Current Options.");
 		if (ops.getBoolean("set_display_config")) {
 			Display.setDisplayConfiguration(ops.getFloat("gamma"),
-							ops.getFloat("brightness"), ops.getFloat("contrast"));
+																			ops.getFloat("brightness"), ops.getFloat(
+																			"contrast"));
 		}
 		Display.setTitle(ops.getString("title"));
 		Display.setResizable(ops.getBoolean("resizeable"));
@@ -93,8 +108,8 @@ public class LWJGLWindow implements GLWindow {
 						sync = Display.getDesktopDisplayMode().getFrequency();
 					}
 					for (DisplayMode dm : dms) {
-						if (dm.getWidth() == width && dm.getHeight() == height
-										&& dm.getFrequency() == sync) {
+						if (dm.getWidth() == width && dm.getHeight() == height &&
+								dm.getFrequency() == sync) {
 							Display.setDisplayModeAndFullscreen(dm);
 							break;
 						}
@@ -110,18 +125,20 @@ public class LWJGLWindow implements GLWindow {
 		if (!ops.getBoolean("fullscreen")) {
 			Display.setFullscreen(false);
 			Display.setDisplayMode(new DisplayMode(ops.getInteger("windowed_width"),
-							ops.getInteger("windowed_height")));
+																						 ops.getInteger("windowed_height")));
 		}
 		LOG.info("Finished Updating Window");
 	}
 
 	@Override
-	public boolean isCloseRequested() throws GLException {
+	public boolean isCloseRequested()
+					throws GLException {
 		return Display.isCloseRequested();
 	}
 
 	@Override
-	public void update() throws GLException {
+	public void update()
+					throws GLException {
 		Display.update();
 		if (Display.wasResized()) {
 			width = Display.getWidth();
@@ -167,12 +184,12 @@ public class LWJGLWindow implements GLWindow {
 	public boolean isCreated() {
 		return iscreated;
 	}
-	
+
 	@Override
 	public int getWidth() {
 		return width;
 	}
-	
+
 	@Override
 	public int getHeight() {
 		return height;

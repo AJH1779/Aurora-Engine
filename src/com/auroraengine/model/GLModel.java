@@ -1,37 +1,89 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 LittleRover
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine.model;
 
-import com.auroraengine.opengl.GLMaterial;
+import com.auroraengine.client.ClientException;
+import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.GLObject;
+import com.auroraengine.utils.IterativeSupplier;
+import java.util.List;
 
 /**
  *
- * @author Arthur
+ * @author LittleRover
  */
-public abstract class GLModel implements GLObject {
-	private GLMaterial material;
+public class GLModel implements GLObject {
 
-	public GLModel(VertexBuffer vb, IndexBuffer ib) {
-		vertexbuffer = vb; indexbuffer = ib;
+	public GLModel(List<Vertex> vertexes, List<Face> faces, GLMaterial material) {
+		this.material = material;
+		this.vertex_buffers = new GLVertexBuffers(new IterativeSupplier<>(vertexes));
+		this.index_buffer = new GLIndexBuffer(new IterativeSupplier<>(faces));
 	}
-	private final VertexBuffer vertexbuffer;
-	private final IndexBuffer indexbuffer;
-	
-	// Defines vertex patches for the index buffer
-	
-	public void draw() {
-		vertexbuffer.bind();
-		indexbuffer.bind();
-		// Bind the textures
-		
-		vertexbuffer.enableClientState();
-		
-		indexbuffer.draw();
-		
-		vertexbuffer.disableClientState();
+	private final GLIndexBuffer index_buffer;
+	private final GLMaterial material;
+	private final GLVertexBuffers vertex_buffers;
+
+	@Override
+	public void create()
+					throws GLException {
+		index_buffer.create();
+		vertex_buffers.create();
+		material.create(this);
 	}
+
+	@Override
+	public void destroy() {
+		index_buffer.destroy();
+		vertex_buffers.destroy();
+		material.destroy(this);
+	}
+
+	@Override
+	public boolean isCreated() {
+		return index_buffer.isCreated() && vertex_buffers.isCreated();
+	}
+
+	@Override
+	public boolean isLoaded() {
+		return index_buffer.isLoaded() && vertex_buffers.isLoaded();
+	}
+
+	@Override
+	public void load()
+					throws ClientException {
+		index_buffer.load();
+		vertex_buffers.load();
+		material.load(this);
+	}
+
+	@Override
+	public void unload()
+					throws ClientException {
+		index_buffer.unload();
+		vertex_buffers.unload();
+		material.unload(this);
+	}
+
+	@Override
+	public void update()
+					throws GLException {
+		index_buffer.update();
+		vertex_buffers.update();
+		material.update();
+	}
+
 }

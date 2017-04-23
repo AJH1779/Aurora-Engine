@@ -1,17 +1,18 @@
 /*
- * Copyright 2016 AuroraEngine.
+ * Copyright (C) 2017 LittleRover
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine.io;
 
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 /**
  * A file reader for the specified object type.
  *
- * @author Arthur
+ * @author LittleRover
  * @param <T> The type of object this file reader loads.
  */
 public abstract class FileReader<T> {
@@ -30,8 +31,8 @@ public abstract class FileReader<T> {
 	private final ArrayList<String> extensions = new ArrayList<>(8);
 
 	/**
-	 * The default constructor which creates a reader for the specified file
-	 * regex patterns. Typically this is something of the form "*.png".
+	 * The default constructor which creates a reader for the specified file regex
+	 * patterns. Typically this is something of the form "*.png".
 	 *
 	 * @param regexes
 	 */
@@ -54,6 +55,7 @@ public abstract class FileReader<T> {
 	 * Removes the specified regex from the default file regex patterns.
 	 *
 	 * @param regex
+	 *
 	 * @return
 	 */
 	public final boolean removeDefaultFiletype(String regex) {
@@ -64,6 +66,7 @@ public abstract class FileReader<T> {
 	 * Returns true if the file matches one of the default file regex patterns.
 	 *
 	 * @param f
+	 *
 	 * @return
 	 */
 	public final boolean isDefaultFiletype(File f) {
@@ -71,10 +74,10 @@ public abstract class FileReader<T> {
 	}
 
 	/**
-	 * Returns true if the string matches one of the default file regex
-	 * patterns.
+	 * Returns true if the string matches one of the default file regex patterns.
 	 *
 	 * @param str
+	 *
 	 * @return
 	 */
 	public final boolean isDefaultFiletype(String str) {
@@ -85,8 +88,11 @@ public abstract class FileReader<T> {
 	 * Loads the specified object from the file immediately.
 	 *
 	 * @param f
+	 *
 	 * @return
+	 *
 	 * @throws IOException
 	 */
-	public abstract T get(File f) throws IOException;
+	public abstract T get(File f)
+					throws IOException;
 }

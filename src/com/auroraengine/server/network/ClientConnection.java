@@ -1,32 +1,56 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 LittleRover
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine.server.network;
 
-import com.auroraengine.creature.soul.PlayerSoul;
-
 /**
+ * Denotes a connection from the server to an individual client.
  *
- * @author Arthur
+ * TODO: Not yet implemented fully.
+ *
+ * @author LittleRover
  */
 public class ClientConnection {
-	
-	public ClientConnection(PlayerSoul player) {
+
+	public ClientConnection(Player player) {
 		this.player = player;
 	}
-	
-	// Will require an object referring to the in-game player thing.
-	private final PlayerSoul player;
-	
+
 	// Health of the connection
 	private long last_message_time;
+	// Will require an object referring to the in-game player thing.
+	private final Player player;
 	private final long[] recent_pings = new long[10];
-	
+
 	// AFK Check
 	private long time_last_active;
-	
+
+	/**
+	 * Returns the approximate latency in milliseconds.
+	 *
+	 * @return
+	 */
+	public long getLatency() {
+		long l = 0L;
+		for (long li : recent_pings) {
+			l += li;
+		}
+		return l / 1000000L;
+	}
+
 	/**
 	 * Called once each tick of the game server.
 	 */
@@ -37,18 +61,5 @@ public class ClientConnection {
 		// Check for limits on actions
 		// Process these actions
 	}
-	
-	/**
-	 * Returns the approximate latency in milliseconds.
-	 * @return 
-	 */
-	public long getLatency() {
-		long l = 0L;
-		for(long li : recent_pings) {
-			l += li;
-		}
-		return l / 1000000L;
-	}
-	
-	
+
 }

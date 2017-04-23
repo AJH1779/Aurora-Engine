@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 LittleRover
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine.stat.damage;
 
@@ -15,21 +26,24 @@ import java.util.stream.Stream;
 
 /**
  *
- * @author Arthur
+ * @author LittleRover
  */
 public class DamageDecks {
 
-	private static final Logger LOG = AuroraLogs.getLogger(DamageDecks.class);
+	private static final Logger LOG = AuroraLogs.getLogger(DamageDecks.class
+					.getName());
 	private static final int NORM_DECK_SIZE = 80, CRIT_DECK_SIZE = 30;
 
 	public DamageDecks(
-			BiFunction<ElementType, Integer, DamageCard> non_lethal_norm_gen,
-			BiFunction<ElementType, Integer, DamageCard> non_lethal_crit_gen,
-			BiFunction<ElementType, Integer, DamageCard> lethal_norm_gen,
-			BiFunction<ElementType, Integer, DamageCard> lethal_crit_gen) {
+					BiFunction<ElementType, Integer, DamageCard> non_lethal_norm_gen,
+					BiFunction<ElementType, Integer, DamageCard> non_lethal_crit_gen,
+					BiFunction<ElementType, Integer, DamageCard> lethal_norm_gen,
+					BiFunction<ElementType, Integer, DamageCard> lethal_crit_gen) {
 		for (ElementType type : ElementType.values()) {
-			ArrayList<DamageCard> non_lethal_norm_list = new ArrayList<>(NORM_DECK_SIZE);
-			ArrayList<DamageCard> non_lethal_crit_list = new ArrayList<>(CRIT_DECK_SIZE);
+			ArrayList<DamageCard> non_lethal_norm_list = new ArrayList<>(
+							NORM_DECK_SIZE);
+			ArrayList<DamageCard> non_lethal_crit_list = new ArrayList<>(
+							CRIT_DECK_SIZE);
 			ArrayList<DamageCard> lethal_norm_list = new ArrayList<>(NORM_DECK_SIZE);
 			ArrayList<DamageCard> lethal_crit_list = new ArrayList<>(CRIT_DECK_SIZE);
 			non_lethal_norm.put(type, non_lethal_norm_list);
@@ -51,28 +65,35 @@ public class DamageDecks {
 		}
 	}
 
-	private final HashMap<ElementType, ArrayList<DamageCard>> non_lethal_norm = new HashMap<>(ElementType.values().length);
-	private final HashMap<ElementType, ArrayList<DamageCard>> non_lethal_crit = new HashMap<>(ElementType.values().length);
-	private final HashMap<ElementType, ArrayList<DamageCard>> lethal_norm = new HashMap<>(ElementType.values().length);
-	private final HashMap<ElementType, ArrayList<DamageCard>> lethal_crit = new HashMap<>(ElementType.values().length);
+	private final HashMap<ElementType, ArrayList<DamageCard>> non_lethal_norm = new HashMap<>(
+					ElementType.values().length);
+	private final HashMap<ElementType, ArrayList<DamageCard>> non_lethal_crit = new HashMap<>(
+					ElementType.values().length);
+	private final HashMap<ElementType, ArrayList<DamageCard>> lethal_norm = new HashMap<>(
+					ElementType.values().length);
+	private final HashMap<ElementType, ArrayList<DamageCard>> lethal_crit = new HashMap<>(
+					ElementType.values().length);
 
 	public Stream<DamageCard> deal(ElementType type, int i) {
 		return deal(type, i, false, true);
 	}
+
 	public Stream<DamageCard> deal(ElementType type, int i, boolean crit) {
 		return deal(type, i, crit, true);
 	}
-	public Stream<DamageCard> deal(ElementType type, int i, boolean crit, boolean lethal) {
+
+	public Stream<DamageCard> deal(ElementType type, int i, boolean crit,
+																 boolean lethal) {
 		if (i < 0) {
 			throw new IllegalArgumentException("Cannot Deal Negative Cards");
 		} else if (i == 0) {
 			return Stream.empty();
 		}
-		ArrayList<DamageCard> list =
-				(crit ? (lethal ? lethal_crit : non_lethal_crit)
-					: (lethal ? lethal_norm : non_lethal_crit)).get(type);
+		ArrayList<DamageCard> list
+						= (crit ? (lethal ? lethal_crit : non_lethal_crit) :
+							 (lethal ? lethal_norm : non_lethal_crit)).get(type);
 		Collections.shuffle(list);
-		if(i >= list.size()) {
+		if (i >= list.size()) {
 			return list.stream();
 		} else {
 			return list.stream().limit(i);

@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 LittleRover
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine.opengl;
 
@@ -21,11 +32,11 @@ import java.util.logging.Logger;
  * to boost performance. Note that the context has Keyboard and Mouse
  * interaction which may be ported to another thread in future.
  *
- * @author Arthur
+ * @author LittleRover
  */
 public class GLCore extends SynchroCore {
 
-	private static final Logger LOG = AuroraLogs.getLogger(GLCore.class);
+	private static final Logger LOG = AuroraLogs.getLogger(GLCore.class.getName());
 
 	/**
 	 * The main constructor which prepares the core using the provided client. It
@@ -50,19 +61,22 @@ public class GLCore extends SynchroCore {
 	private final ArrayList<Viewport> viewports;
 
 	@Override
-	protected void initialise() throws GLException {
+	protected void initialise()
+					throws GLException {
 		LOG.info("Initialising");
 		window.create();
 		LOG.info("Initialised");
 	}
 
 	@Override
-	protected boolean isRunning() throws GLException {
+	protected boolean isRunning()
+					throws GLException {
 		return !window.isCloseRequested();
 	}
 
 	@Override
-	protected void update() throws GLException {
+	protected void update()
+					throws GLException {
 		// Required to reset the view
 		window.update();
 
@@ -72,7 +86,8 @@ public class GLCore extends SynchroCore {
 			try {
 				v.render();
 			} catch (GLException ex) {
-				LOG.log(Level.WARNING, "Failed to render the viewport: {0}", v.toString());
+				LOG.log(Level.WARNING, "Failed to render the viewport: {0}", v
+								.toString());
 			}
 		});
 	}

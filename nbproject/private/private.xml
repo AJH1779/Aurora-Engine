@@ -2,6 +2,31 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/Face.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/GLMaterial.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/ModifiableVertexFormat.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/client/ClientException.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/CreatureVertexFormat.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/VertexBuffer.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/GLException.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/GLVertexBuffers.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/BufferUsage.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/shaders/ShaderLibrary.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/shaders/ShaderType.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/shaders/GLProgram.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/utils/ShaderLibrary.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/GLIndexBuffer.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/IndexBuffer.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/io/IOUtils.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/GLSharedObject.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/GLObject.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/GLModel.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/Vertex.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/opengl/shaders/GLShader.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/ai/pathfinding/AStarPathfinder.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/model/VertexFormat.java</file>
+            <file>file:/X:/Documents/GitHub/Aurora-Engine/src/com/auroraengine/data/Client.java</file>
+        </group>
     </open-files>
 </project-private>

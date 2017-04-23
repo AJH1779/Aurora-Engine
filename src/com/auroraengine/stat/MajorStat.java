@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 LittleRover
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.auroraengine.stat;
 
@@ -15,25 +26,28 @@ import java.util.stream.Stream;
  * This contains the properties of the major stats in the game as given in
  * MajorStatType.
  *
- * @author Arthur
+ * @author LittleRover
  */
 public class MajorStat {
-	private static final Logger LOG = AuroraLogs.getLogger(MajorStat.class);
+	private static final Logger LOG = AuroraLogs.getLogger(MajorStat.class
+					.getName());
 	private static final int MAX_STAT_VALUE = 30, BASE_STAT_VALUE = 2;
 
 	/**
 	 * Creates a new stat of the provided type
+	 *
 	 * @param type
 	 */
 	public MajorStat(MajorStatType type) {
-		if(type == null) {
+		if (type == null) {
 			throw new NullPointerException("Stat Type is Null!");
 		}
 		this.type = type;
 	}
 	private final MajorStatType type;
 	private int value = 0;
-	private final ArrayList<Ability> abilities = new ArrayList<>(Arrays.asList(new Ability[MAX_STAT_VALUE + BASE_STAT_VALUE]));
+	private final ArrayList<Ability> abilities = new ArrayList<>(Arrays.asList(
+					new Ability[MAX_STAT_VALUE + BASE_STAT_VALUE]));
 
 	/**
 	 * Returns the type of the stat.
@@ -49,6 +63,7 @@ public class MajorStat {
 	 * which is by default 30. Returns the modified value.
 	 *
 	 * @param val The value to set as
+	 *
 	 * @return The new value
 	 */
 	public int setValue(int val) {
@@ -66,8 +81,8 @@ public class MajorStat {
 	}
 
 	/**
-	 * Returns a stream of the currently active abilities, which is the value
-	 * plus BASE_STAT_VALUE, by default 2.
+	 * Returns a stream of the currently active abilities, which is the value plus
+	 * BASE_STAT_VALUE, by default 2.
 	 *
 	 * @return
 	 */
@@ -76,8 +91,8 @@ public class MajorStat {
 	}
 
 	/**
-	 * Returns a stream of the currently active abilities, which is the value
-	 * plus BASE_STAT_VALUE, by default 2.
+	 * Returns a stream of the currently active abilities, which is the value plus
+	 * BASE_STAT_VALUE, by default 2.
 	 *
 	 * @return
 	 */
@@ -89,6 +104,7 @@ public class MajorStat {
 	 * Returns the ability in the given slot, or null if there is not one.
 	 *
 	 * @param i The slot id.
+	 *
 	 * @return The ability there.
 	 */
 	public Ability getAbility(int i) {
@@ -96,14 +112,15 @@ public class MajorStat {
 	}
 
 	/**
-	 * Adds the given ability to the first available slot, returning true only
-	 * if a space existed for it to be placed in.
+	 * Adds the given ability to the first available slot, returning true only if
+	 * a space existed for it to be placed in.
 	 *
 	 * @param a The ability to add
+	 *
 	 * @return True if added
 	 */
 	public boolean addAbility(Ability a) {
-		if(!a.isCompatible(type)) {
+		if (!a.isCompatible(type)) {
 			return false;
 		}
 		int i = abilities.indexOf(null);
@@ -116,10 +133,11 @@ public class MajorStat {
 	}
 
 	/**
-	 * Removes the provided ability from the list, returning true if it was
-	 * found and removed.
+	 * Removes the provided ability from the list, returning true if it was found
+	 * and removed.
 	 *
 	 * @param a The ability to remove
+	 *
 	 * @return True if removed
 	 */
 	public boolean removeAbility(Ability a) {
@@ -133,23 +151,27 @@ public class MajorStat {
 	}
 
 	/**
-	 * Sets the ability in the specified slot to the provided slot, returning
-	 * the ability already located there or null if the slot was empty. Returns
-	 * the ability being placed if the ability is already included here.
+	 * Sets the ability in the specified slot to the provided slot, returning the
+	 * ability already located there or null if the slot was empty. Returns the
+	 * ability being placed if the ability is already included here.
 	 *
 	 * @param a The ability to add
 	 * @param i The place to add it
+	 *
 	 * @return The ability already there
 	 */
 	public Ability setAbility(Ability a, int i) {
-		return (a.isCompatible(type) && (abilities.contains(a) || i < 0 || i >= abilities.size()))
-				? a : abilities.set(i, a);
+		return (a.isCompatible(type) && (abilities.contains(a) || i < 0 || i >=
+																																			 abilities
+																																							 .size())) ?
+					 a : abilities.set(i, a);
 	}
 
 	/**
 	 * Returns true if the abilities currently contain the specified ability.
 	 *
 	 * @param a The ability to check
+	 *
 	 * @return True if contained
 	 */
 	public boolean containsAbility(Ability a) {
