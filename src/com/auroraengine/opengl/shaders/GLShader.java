@@ -44,6 +44,8 @@ public class GLShader extends GLSharedObject {
 	private static final Pattern UNIFORM_PATTERN = Pattern
 					.compile("[^;]*uniform [^;]*");
 
+	// TODO: Implement shader from resource.
+	// This can be separate from a file for the shader.
 	/**
 	 * Creates a new shader using the specified file. The extension of the file
 	 * determines the type of the shader.
