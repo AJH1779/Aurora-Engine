@@ -18,7 +18,6 @@ package com.auroraengine.camera;
 
 import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.entity.Entity;
-import com.auroraengine.opengl.shaders.ShaderLibrary;
 import com.auroraengine.world.LocalPosition;
 import java.util.logging.Logger;
 
@@ -41,7 +40,6 @@ public class Camera extends Entity {
 	public Camera(LocalPosition pos) {
 		super(pos);
 	}
-	private ShaderLibrary shader_library;
 
 	// TODO: Frustrum
 	// TODO: Camera

@@ -22,4 +22,18 @@ package com.auroraengine.opengl.shaders;
  */
 public abstract class GLUniform {
 
+	// TODO: Not implemented, will need focus to be implemented.
+	// View the specifications for uniforms and how they should be implmeneted.
+	/**
+	 * Creates a new object representing a uniform variable within a shader.
+	 *
+	 * @param name
+	 * @param index
+	 */
+	public GLUniform(String name, int index) {
+		this.name = name;
+		this.index = index;
+	}
+	final int index;
+	final String name;
 }

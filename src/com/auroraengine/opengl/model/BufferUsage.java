@@ -14,20 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.auroraengine.opengl.shaders;
+package com.auroraengine.opengl.model;
 
-import com.auroraengine.debug.AuroraLogs;
-import java.util.logging.Logger;
+import static org.lwjgl.opengl.GL15.*;
 
 /**
  *
  * @author LittleRover
  */
-public class ShaderLibrary {
-	private static final Logger LOG = AuroraLogs.getLogger(ShaderLibrary.class
-					.getName());
+public enum BufferUsage {
+	STATIC(GL_STATIC_DRAW),
+	DYNAMIC(GL_DYNAMIC_DRAW),
+	STREAM(GL_STREAM_DRAW);
 
-	private ShaderLibrary() {
+	BufferUsage(int p_gl_draw) {
+		gl_draw = p_gl_draw;
 	}
-
+	public final int gl_draw;
 }

@@ -98,7 +98,11 @@ public class GLShader extends GLSharedObject {
 			GL20.glDeleteShader(index);
 			throw ex;
 		}
+		uniforms.clear();
 		Matcher m = UNIFORM_PATTERN.matcher(code);
+		while (m.find()) {
+
+		}
 	}
 
 	@Override

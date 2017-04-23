@@ -82,6 +82,9 @@ public class IOUtils {
 	 * @param p_resource The name of the resource to load.
 	 *
 	 * @return The resource path.
+	 *
+	 * @throws AuroraException If there was an exception with the syntax of the
+	 *                         path.
 	 */
 	@NotNull
 	public static Path resourceToPath(@NotNull String p_resource)
