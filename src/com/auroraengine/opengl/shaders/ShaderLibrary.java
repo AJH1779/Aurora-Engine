@@ -16,10 +16,18 @@
  */
 package com.auroraengine.opengl.shaders;
 
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
+
 /**
  *
  * @author LittleRover
  */
 public class ShaderLibrary {
+	private static final Logger LOG = AuroraLogs.getLogger(ShaderLibrary.class
+					.getName());
+
+	private ShaderLibrary() {
+	}
 
 }

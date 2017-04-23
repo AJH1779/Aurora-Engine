@@ -16,6 +16,7 @@
  */
 package com.auroraengine.creature.soul;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.logging.Logger;
 
 /**
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class Soul {
-	private static final Logger LOG = Logger.getLogger(Soul.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(Soul.class.getName());
 
 	private Soul() {
 	}

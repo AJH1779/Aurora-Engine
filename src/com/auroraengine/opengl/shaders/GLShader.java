@@ -19,6 +19,7 @@ package com.auroraengine.opengl.shaders;
 import com.auroraengine.client.ClientException;
 import com.auroraengine.data.Client;
 import com.auroraengine.debug.AuroraException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.io.IOUtils;
 import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.GLSharedObject;
@@ -38,7 +39,10 @@ import org.lwjgl.opengl.GL20;
 @Client
 @GLVersion(version = 20)
 public class GLShader extends GLSharedObject {
-	private static final Logger LOG = Logger.getLogger(GLShader.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(GLShader.class
+					.getName());
+	private static final Pattern UNIFORM_PATTERN = Pattern
+					.compile("[^;]*uniform [^;]*");
 
 	/**
 	 * Creates a new shader using the specified file. The extension of the file
@@ -94,8 +98,6 @@ public class GLShader extends GLSharedObject {
 		}
 		Matcher m = UNIFORM_PATTERN.matcher(code);
 	}
-	private static final Pattern UNIFORM_PATTERN = Pattern
-					.compile("[^;]*uniform [^;]*");
 
 	@Override
 	protected void forceCreate()

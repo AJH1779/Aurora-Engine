@@ -47,8 +47,7 @@ public class WorldCore extends SynchroCore {
 	}
 
 	@Override
-	protected void update()
-					throws AuroraException {
+	protected void processException(AuroraException ex) {
 
 	}
 
@@ -58,7 +57,8 @@ public class WorldCore extends SynchroCore {
 	}
 
 	@Override
-	protected void processException(AuroraException ex) {
+	protected void update()
+					throws AuroraException {
 
 	}
 }

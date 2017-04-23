@@ -17,6 +17,7 @@
 package com.auroraengine.opengl;
 
 import com.auroraengine.client.ClientException;
+import com.auroraengine.debug.AuroraLogs;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +29,7 @@ import java.util.stream.Stream;
  * @author LittleRover
  */
 public abstract class GLSharedObject implements GLObject {
-	private static final Logger LOG = Logger.getLogger(GLSharedObject.class
+	private static final Logger LOG = AuroraLogs.getLogger(GLSharedObject.class
 					.getName());
 	private final HashSet<GLObject> created_users = new HashSet<>();
 	private final HashSet<GLObject> loaded_users = new HashSet<>();

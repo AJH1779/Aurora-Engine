@@ -16,13 +16,18 @@
  */
 package com.auroraengine.map.grid;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.function.BiFunction;
+import java.util.logging.Logger;
 
 /**
  * A generic grid element object contained within a Grid object which allows for
  * the grid elements themselves to be linked relative to each other.
  */
 public class GridElement {
+	private static final Logger LOG = AuroraLogs.getLogger(GridElement.class
+					.getName());
+
 	/**
 	 * Creates a grid element linked to the specified grid object.
 	 *
@@ -35,9 +40,9 @@ public class GridElement {
 		this.grid = grid;
 		position = new int[grid.getDimension()];
 	}
-	private final int[] position;
 	private final Grid<GridElement> grid;
 	private boolean isnullposition = true;
+	private final int[] position;
 
 	/**
 	 * Returns the dimensional space occupied by this grid element.
@@ -55,6 +60,17 @@ public class GridElement {
 	 */
 	public Grid<GridElement> getGrid() {
 		return grid;
+	}
+
+	/**
+	 * Returns the element neighbouring this one by the specified offset.
+	 *
+	 * @param dp The offset
+	 *
+	 * @return The neighbour
+	 */
+	public GridElement getNeighbour(int[] dp) {
+		return isnullposition ? null : grid.get(getPosition(dp));
 	}
 
 	/**
@@ -94,14 +110,12 @@ public class GridElement {
 	}
 
 	/**
-	 * Returns the element neighbouring this one by the specified offset.
-	 *
-	 * @param dp The offset
-	 *
-	 * @return The neighbour
+	 * Sets the position of this object within the grid to null, removing it from
+	 * the grid.
 	 */
-	public GridElement getNeighbour(int[] dp) {
-		return isnullposition ? null : grid.get(getPosition(dp));
+	public void setNullPosition() {
+		this.isnullposition = true;
+		grid.set(position, Grid::func_check_null, Grid::func_make_null);
 	}
 
 	/**
@@ -127,12 +141,4 @@ public class GridElement {
 		}
 	}
 
-	/**
-	 * Sets the position of this object within the grid to null, removing it from
-	 * the grid.
-	 */
-	public void setNullPosition() {
-		this.isnullposition = true;
-		grid.set(position, Grid::func_check_null, Grid::func_make_null);
-	}
 }

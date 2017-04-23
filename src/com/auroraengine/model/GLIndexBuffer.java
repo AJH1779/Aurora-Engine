@@ -17,12 +17,14 @@
 package com.auroraengine.model;
 
 import com.auroraengine.client.ClientException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.GLObject;
 import java.nio.IntBuffer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
@@ -32,6 +34,8 @@ import org.lwjgl.opengl.GL15;
  * @author LittleRover
  */
 public class GLIndexBuffer implements GLObject {
+	private static final Logger LOG = AuroraLogs.getLogger(GLIndexBuffer.class
+					.getName());
 
 	public GLIndexBuffer(Supplier<Face> p_supplier) {
 		this.face_supplier = p_supplier;

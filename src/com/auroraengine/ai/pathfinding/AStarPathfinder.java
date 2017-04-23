@@ -16,6 +16,7 @@
  */
 package com.auroraengine.ai.pathfinding;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
  */
 public class AStarPathfinder<T, K extends IPathCost> implements
 				IPathFinder<T, K> {
-	private static final Logger LOG = Logger.getLogger(AStarPathfinder.class
+	private static final Logger LOG = AuroraLogs.getLogger(AStarPathfinder.class
 					.getName());
 
 	@Override

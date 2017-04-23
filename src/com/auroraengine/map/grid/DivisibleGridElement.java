@@ -16,12 +16,24 @@
  */
 package com.auroraengine.map.grid;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.logging.Logger;
 
+/**
+ * An element of a grid that can be subdivided into a 2^(DIM) set of
+ * sub-elements.
+ *
+ * @author Arthur
+ */
 public class DivisibleGridElement extends GridElement {
-	private static final Logger LOG = Logger.getLogger(DivisibleGridElement.class
-					.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(
+					DivisibleGridElement.class.getName());
 
+	/**
+	 * Creates a new element contained in the specified grid.
+	 *
+	 * @param grid The parent grid
+	 */
 	public DivisibleGridElement(Grid<GridElement> grid) {
 		super(grid);
 		parent = null;
@@ -29,6 +41,17 @@ public class DivisibleGridElement extends GridElement {
 		scale = 0;
 	}
 
+	/**
+	 * Creates a new element contained in the specified parent element.
+	 *
+	 * // TODO: An integer position array?
+	 *
+	 * TODO: OverridableMethodCallInConstructor
+	 *
+	 * @param parent The parent element
+	 * @param pos
+	 */
+	@SuppressWarnings("OverridableMethodCallInConstructor")
 	public DivisibleGridElement(DivisibleGridElement parent, int[] pos) {
 		super(parent.getGrid());
 		this.parent = parent;
@@ -37,13 +60,26 @@ public class DivisibleGridElement extends GridElement {
 		this.setPosition(pos, Grid::func_check_unoccupied);
 	}
 	private final DivisibleGridElement[] children;
+	// TODO: FieldMayBeFinal
+	@SuppressWarnings("FieldMayBeFinal")
 	private DivisibleGridElement parent;
 	private final int scale;
 
+	/**
+	 * Returns the parent element of this element, if it exists.
+	 *
+	 * @return
+	 */
 	public DivisibleGridElement getParent() {
 		return parent;
 	}
 
+	/**
+	 * Returns the scale of this element, i.e. the number of times getParent can
+	 * be called on the returned value before null is returned.
+	 *
+	 * @return
+	 */
 	public int getScale() {
 		return scale;
 	}

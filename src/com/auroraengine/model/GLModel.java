@@ -17,16 +17,20 @@
 package com.auroraengine.model;
 
 import com.auroraengine.client.ClientException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.GLObject;
 import com.auroraengine.utils.IterativeSupplier;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  *
  * @author LittleRover
  */
 public class GLModel implements GLObject {
+	private static final Logger LOG = AuroraLogs
+					.getLogger(GLModel.class.getName());
 
 	public GLModel(List<Vertex> vertexes, List<Face> faces, GLMaterial material) {
 		this.material = material;

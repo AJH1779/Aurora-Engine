@@ -16,6 +16,9 @@
  */
 package com.auroraengine.server.network;
 
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
+
 /**
  * Denotes a connection from the server to an individual client.
  *
@@ -24,6 +27,8 @@ package com.auroraengine.server.network;
  * @author LittleRover
  */
 public class ClientConnection {
+	private static final Logger LOG = AuroraLogs.getLogger(ClientConnection.class
+					.getName());
 
 	public ClientConnection(Player player) {
 		this.player = player;

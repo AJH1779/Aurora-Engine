@@ -19,14 +19,13 @@ package com.auroraengine.opengl;
 import com.auroraengine.client.ClientException;
 import com.auroraengine.client.Session;
 import com.auroraengine.data.ProgramProperties;
-
+import com.auroraengine.debug.AuroraLogs;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -36,8 +35,10 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public final class GLOptions {
-	private static final Logger LOG = Logger.getLogger(GLOptions.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(GLOptions.class
+					.getName());
 
+	@SuppressWarnings("UseOfSystemOutOrSystemErr")
 	public static void main(String[] args)
 					throws ClientException {
 		GLOptions ops = new GLOptions();
@@ -117,7 +118,7 @@ public final class GLOptions {
 			for (String line = in.readLine(); line != null; line = in.readLine()) {
 				String key, val;
 				if (line.contains(" : ")) {
-					key = line.substring(0, line.indexOf(" "));
+					key = line.substring(0, line.indexOf(' '));
 					val = line.substring(line.indexOf(" : ") + 3);
 					if (val.matches("-?[0-9]+")) {
 						data.put(key, Integer.valueOf(val));

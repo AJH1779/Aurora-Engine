@@ -16,12 +16,18 @@
  */
 package com.auroraengine.stat;
 
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
+
 /**
  * A stat type for things like health, mana, and stamina.
  *
  * @author LittleRover
  */
 public class ActiveStat {
+	private static final Logger LOG = AuroraLogs.getLogger(ActiveStat.class
+					.getName());
+
 	public ActiveStat(int val) {
 		this(val, 0, 0, val, val);
 	}
@@ -41,40 +47,54 @@ public class ActiveStat {
 		this.natural_max = Math.max(nat_min, nat_max);
 		this.natural_min = Math.min(nat_min, nat_max);
 	}
+	private int current_max;
+	private int current_min;
 	private int current_val;
-	private int current_min, current_max;
-	private int natural_min, natural_max;
+	private int natural_max;
+	private int natural_min;
 
 	public int getCurrent() {
 		return current_val;
 	}
 
-	public int getMinimum() {
-		return current_min;
+	public float getFraction() {
+		return (current_val - current_min) / (float) (current_max -
+																									current_min);
+	}
+
+	public float getMaxFrac() {
+		return (current_max - natural_min) / (float) (natural_max -
+																									natural_min);
 	}
 
 	public int getMaximum() {
 		return current_max;
 	}
 
-	public int getNaturalMin() {
-		return natural_min;
+	public float getMinFrac() {
+		return (current_min - natural_min) / (float) (natural_max -
+																									natural_min);
+	}
+
+	public int getMinimum() {
+		return current_min;
+	}
+
+	public float getNaturalFrac() {
+		return (current_val - natural_min) / (float) (natural_max -
+																									natural_min);
 	}
 
 	public int getNaturalMax() {
 		return natural_max;
 	}
 
-	public void setCurrent(int val) {
-		current_val = Math.max(current_min, Math.min(current_max, val));
+	public int getNaturalMin() {
+		return natural_min;
 	}
 
-	public void setMinimum(int val) {
-		current_min = val;
-		if (current_min > current_max) {
-			current_max = current_min;
-		}
-		setCurrent(current_val);
+	public void setCurrent(int val) {
+		current_val = Math.max(current_min, Math.min(current_max, val));
 	}
 
 	public void setMaximum(int val) {
@@ -85,31 +105,20 @@ public class ActiveStat {
 		setCurrent(current_val);
 	}
 
-	public void setNaturalMin(int val) {
-		this.natural_min = val;
+	public void setMinimum(int val) {
+		current_min = val;
+		if (current_min > current_max) {
+			current_max = current_min;
+		}
+		setCurrent(current_val);
 	}
 
 	public void setNaturalMax(int val) {
 		this.natural_max = val;
 	}
 
-	public float getFraction() {
-		return (float) (current_val - current_min) / (float) (current_max -
-																													current_min);
+	public void setNaturalMin(int val) {
+		this.natural_min = val;
 	}
 
-	public float getNaturalFrac() {
-		return (float) (current_val - natural_min) / (float) (natural_max -
-																													natural_min);
-	}
-
-	public float getMinFrac() {
-		return (float) (current_min - natural_min) / (float) (natural_max -
-																													natural_min);
-	}
-
-	public float getMaxFrac() {
-		return (float) (current_max - natural_min) / (float) (natural_max -
-																													natural_min);
-	}
 }

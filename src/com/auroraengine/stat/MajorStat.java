@@ -29,9 +29,10 @@ import java.util.stream.Stream;
  * @author LittleRover
  */
 public class MajorStat {
+	private static final int BASE_STAT_VALUE = 2;
 	private static final Logger LOG = AuroraLogs.getLogger(MajorStat.class
 					.getName());
-	private static final int MAX_STAT_VALUE = 30, BASE_STAT_VALUE = 2;
+	private static final int MAX_STAT_VALUE = 30;
 
 	/**
 	 * Creates a new stat of the provided type
@@ -44,72 +45,10 @@ public class MajorStat {
 		}
 		this.type = type;
 	}
-	private final MajorStatType type;
-	private int value = 0;
 	private final ArrayList<Ability> abilities = new ArrayList<>(Arrays.asList(
 					new Ability[MAX_STAT_VALUE + BASE_STAT_VALUE]));
-
-	/**
-	 * Returns the type of the stat.
-	 *
-	 * @return
-	 */
-	public MajorStatType getStatType() {
-		return type;
-	}
-
-	/**
-	 * Sets the value of the stat. This is bounded between 0 and MAX_STAT_VALUE
-	 * which is by default 30. Returns the modified value.
-	 *
-	 * @param val The value to set as
-	 *
-	 * @return The new value
-	 */
-	public int setValue(int val) {
-		value = Math.min(MAX_STAT_VALUE, Math.max(0, val));
-		return value;
-	}
-
-	/**
-	 * Returns the value of the stat.
-	 *
-	 * @return The current value
-	 */
-	public int getValue() {
-		return value;
-	}
-
-	/**
-	 * Returns a stream of the currently active abilities, which is the value plus
-	 * BASE_STAT_VALUE, by default 2.
-	 *
-	 * @return
-	 */
-	public Stream<Ability> getAbilities() {
-		return abilities.stream();
-	}
-
-	/**
-	 * Returns a stream of the currently active abilities, which is the value plus
-	 * BASE_STAT_VALUE, by default 2.
-	 *
-	 * @return
-	 */
-	public Stream<Ability> getActiveAbilities() {
-		return abilities.stream().limit(value + BASE_STAT_VALUE);
-	}
-
-	/**
-	 * Returns the ability in the given slot, or null if there is not one.
-	 *
-	 * @param i The slot id.
-	 *
-	 * @return The ability there.
-	 */
-	public Ability getAbility(int i) {
-		return i < 0 || i >= abilities.size() ? null : abilities.get(i);
-	}
+	private final MajorStatType type;
+	private int value = 0;
 
 	/**
 	 * Adds the given ability to the first available slot, returning true only if
@@ -130,6 +69,66 @@ public class MajorStat {
 			abilities.set(i, a);
 			return true;
 		}
+	}
+
+	/**
+	 * Returns true if the abilities currently contain the specified ability.
+	 *
+	 * @param a The ability to check
+	 *
+	 * @return True if contained
+	 */
+	public boolean containsAbility(Ability a) {
+		return abilities.contains(a);
+	}
+
+	/**
+	 * Returns a stream of the currently active abilities, which is the value plus
+	 * BASE_STAT_VALUE, by default 2.
+	 *
+	 * @return
+	 */
+	public Stream<Ability> getAbilities() {
+		return abilities.stream();
+	}
+
+	/**
+	 * Returns the ability in the given slot, or null if there is not one.
+	 *
+	 * @param i The slot id.
+	 *
+	 * @return The ability there.
+	 */
+	public Ability getAbility(int i) {
+		return i < 0 || i >= abilities.size() ? null : abilities.get(i);
+	}
+
+	/**
+	 * Returns a stream of the currently active abilities, which is the value plus
+	 * BASE_STAT_VALUE, by default 2.
+	 *
+	 * @return
+	 */
+	public Stream<Ability> getActiveAbilities() {
+		return abilities.stream().limit(value + BASE_STAT_VALUE);
+	}
+
+	/**
+	 * Returns the type of the stat.
+	 *
+	 * @return
+	 */
+	public MajorStatType getStatType() {
+		return type;
+	}
+
+	/**
+	 * Returns the value of the stat.
+	 *
+	 * @return The current value
+	 */
+	public int getValue() {
+		return value;
 	}
 
 	/**
@@ -168,13 +167,15 @@ public class MajorStat {
 	}
 
 	/**
-	 * Returns true if the abilities currently contain the specified ability.
+	 * Sets the value of the stat. This is bounded between 0 and MAX_STAT_VALUE
+	 * which is by default 30. Returns the modified value.
 	 *
-	 * @param a The ability to check
+	 * @param val The value to set as
 	 *
-	 * @return True if contained
+	 * @return The new value
 	 */
-	public boolean containsAbility(Ability a) {
-		return abilities.contains(a);
+	public int setValue(int val) {
+		value = Math.min(MAX_STAT_VALUE, Math.max(0, val));
+		return value;
 	}
 }

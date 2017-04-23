@@ -16,6 +16,7 @@
  */
 package com.auroraengine.camera;
 
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.entity.Entity;
 import com.auroraengine.opengl.shaders.ShaderLibrary;
 import com.auroraengine.world.LocalPosition;
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class Camera extends Entity {
-	private static final Logger LOG = Logger.getLogger(Camera.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(Camera.class.getName());
 
 	/**
 	 * Creates a new camera at the specified position.

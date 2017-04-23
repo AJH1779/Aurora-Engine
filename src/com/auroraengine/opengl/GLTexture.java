@@ -17,10 +17,12 @@
 package com.auroraengine.opengl;
 
 import com.auroraengine.client.ClientException;
+import com.auroraengine.debug.AuroraLogs;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -31,6 +33,8 @@ import org.lwjgl.opengl.GL12;
  * @author LittleRover
  */
 public class GLTexture implements GLObject {
+	private static final Logger LOG = AuroraLogs.getLogger(GLTexture.class
+					.getName());
 
 	public GLTexture(int w, int h) {
 		this.img = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
@@ -44,12 +48,41 @@ public class GLTexture implements GLObject {
 		this.file = file;
 	}
 	private File file;
-	private BufferedImage img;
-	private boolean save_on_unload = false;
-
-	private int min_filter = GL11.GL_LINEAR, mag_filter = GL11.GL_LINEAR;
-	private int wrap_s = GL11.GL_REPEAT, wrap_t = GL11.GL_REPEAT;
 	private boolean image_modified = true;
+	private BufferedImage img;
+	private int mag_filter = GL11.GL_LINEAR;
+	private int min_filter = GL11.GL_LINEAR;
+	private boolean save_on_unload = false;
+	private int tex_ref = 0;
+	private int wrap_s = GL11.GL_REPEAT;
+	private int wrap_t = GL11.GL_REPEAT;
+
+	@Override
+	public void create()
+					throws GLException {
+		if (tex_ref == 0) {
+			tex_ref = GL11.glGenTextures();
+			update();
+		}
+	}
+
+	@Override
+	public void destroy() {
+		if (tex_ref != 0) {
+			GL11.glDeleteTextures(tex_ref);
+			tex_ref = 0;
+		}
+	}
+
+	@Override
+	public boolean isCreated() {
+		return tex_ref > 0;
+	}
+
+	@Override
+	public boolean isLoaded() {
+		return img == null;
+	}
 
 	@Override
 	public void load()
@@ -78,17 +111,6 @@ public class GLTexture implements GLObject {
 		}
 	}
 
-	private int tex_ref = 0;
-
-	@Override
-	public void create()
-					throws GLException {
-		if (tex_ref == 0) {
-			tex_ref = GL11.glGenTextures();
-			update();
-		}
-	}
-
 	@Override
 	public void update()
 					throws GLException {
@@ -112,23 +134,5 @@ public class GLTexture implements GLObject {
 				// TODO: Redirect images to buffers
 			}
 		}
-	}
-
-	@Override
-	public void destroy() {
-		if (tex_ref != 0) {
-			GL11.glDeleteTextures(tex_ref);
-			tex_ref = 0;
-		}
-	}
-
-	@Override
-	public boolean isLoaded() {
-		return img == null;
-	}
-
-	@Override
-	public boolean isCreated() {
-		return tex_ref > 0;
 	}
 }

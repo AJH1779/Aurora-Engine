@@ -28,8 +28,6 @@ import java.util.ArrayList;
  */
 public abstract class FileReader<T> {
 
-	private final ArrayList<String> extensions = new ArrayList<>(8);
-
 	/**
 	 * The default constructor which creates a reader for the specified file regex
 	 * patterns. Typically this is something of the form "*.png".
@@ -41,6 +39,7 @@ public abstract class FileReader<T> {
 			addDefaultFiletype(regex);
 		}
 	}
+	private final ArrayList<String> extensions = new ArrayList<>(8);
 
 	/**
 	 * Adds the specified regex to the default file regex patterns.
@@ -52,15 +51,16 @@ public abstract class FileReader<T> {
 	}
 
 	/**
-	 * Removes the specified regex from the default file regex patterns.
+	 * Loads the specified object from the file immediately.
 	 *
-	 * @param regex
+	 * @param f
 	 *
 	 * @return
+	 *
+	 * @throws IOException
 	 */
-	public final boolean removeDefaultFiletype(String regex) {
-		return this.extensions.remove(regex);
-	}
+	public abstract T get(File f)
+					throws IOException;
 
 	/**
 	 * Returns true if the file matches one of the default file regex patterns.
@@ -85,14 +85,13 @@ public abstract class FileReader<T> {
 	}
 
 	/**
-	 * Loads the specified object from the file immediately.
+	 * Removes the specified regex from the default file regex patterns.
 	 *
-	 * @param f
+	 * @param regex
 	 *
 	 * @return
-	 *
-	 * @throws IOException
 	 */
-	public abstract T get(File f)
-					throws IOException;
+	public final boolean removeDefaultFiletype(String regex) {
+		return this.extensions.remove(regex);
+	}
 }

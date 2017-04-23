@@ -17,6 +17,7 @@
 package com.auroraengine.client;
 
 import com.auroraengine.data.ProgramProperties;
+import com.auroraengine.debug.AuroraLogs;
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -27,7 +28,8 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public final class Session {
-	private static final Logger LOG = Logger.getLogger(Session.class.getName());
+	private static final Logger LOG = AuroraLogs
+					.getLogger(Session.class.getName());
 
 	/**
 	 * Creates a new session using the specified username and the provided

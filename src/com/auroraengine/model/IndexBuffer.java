@@ -17,10 +17,12 @@
 package com.auroraengine.model;
 
 import com.auroraengine.client.ClientException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.GLObject;
 import java.nio.IntBuffer;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
@@ -31,6 +33,9 @@ import org.lwjgl.opengl.GL15;
  * @author LittleRover
  */
 public class IndexBuffer implements GLObject {
+	private static final Logger LOG = AuroraLogs.getLogger(IndexBuffer.class
+					.getName());
+
 	/**
 	 * Creates a new index buffer using the supplier of the buffer. A supplier is
 	 * used to allow for loading from a file or generating by algorithm using

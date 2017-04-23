@@ -16,6 +16,7 @@
  */
 package com.auroraengine.creature.body.genetics;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.logging.Logger;
 
 /**
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class Genome {
-	private static final Logger LOG = Logger.getLogger(Genome.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(Genome.class.getName());
 	private Chromosome[][] chromos;
 
 	// TODO: Replace the genome with the separate genomes system.

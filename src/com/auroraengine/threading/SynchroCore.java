@@ -65,13 +65,110 @@ public abstract class SynchroCore implements Runnable {
 			LOG.log(Level.INFO, "New Inmaster Synchro \"{0}\" Created", name);
 		}
 	}
-	private final String name;
-	private final SynchroCore master;
-	private volatile boolean halted = false, running = false,
-					looping = false, threading = false;
+	private volatile boolean halted = false;
 	private final Lock lock = new ReentrantLock();
 	private final Condition condition = lock.newCondition();
+	private volatile boolean looping = false;
+	private final SynchroCore master;
+	private final String name;
+	private volatile boolean running = false;
 	private Thread thread;
+	private volatile boolean threading = false;
+
+	/**
+	 * The method called at the beginning of thread creation. At this time,
+	 * <code>getThreading()</code> returns true whilst <code>getRunning()</code>
+	 * and <code>getLooping()</code> returns false.
+	 *
+	 * This thread is only called once.
+	 *
+	 * This method should not be called outside of its own thread.
+	 *
+	 * @throws AuroraException
+	 */
+	protected abstract void initialise()
+					throws AuroraException;
+
+	/**
+	 * This method is called at the beginning of each thread update. At this time,
+	 * <code>getThreading()</code>, <code>getRunning()</code> and
+	 * <code>getLooping()</code> all return true.
+	 *
+	 * Returns false if the thread is ending gracefully.
+	 *
+	 * This method should not be called outside of its own thread.
+	 *
+	 * @return If the thread should continue to run.
+	 *
+	 * @throws AuroraException
+	 */
+	protected abstract boolean isRunning()
+					throws AuroraException;
+
+	/**
+	 * This method is called to perform fatal exception handling. At this time,
+	 * <code>getThreading()</code> and <code>getRunning()</code> returns true
+	 * whilst <code>getLooping()</code> returns false.
+	 *
+	 * This method is only called once.
+	 *
+	 * This method should not be called outside of its own thread.
+	 *
+	 * @param ex The Fatal Exception
+	 */
+	protected abstract void processException(AuroraException ex);
+
+	/**
+	 * This method is always called when the thread is closing. Releasing of
+	 * resources is performed here and a best effort attempt must be made. At this
+	 * time, <code>getThreading()</code> and <code>getRunning()</code> returns
+	 * true whilst <code>getLooping()</code> returns false.
+	 *
+	 * This is called even when <code>halt()</code> is used to end the thread.
+	 * This method must account for that possibility.
+	 */
+	protected abstract void shutdown();
+
+	/**
+	 * This method is called to perform each thread update. At this time,
+	 * <code>getThreading()</code>, <code>getRunning()</code> and
+	 * <code>getLooping()</code> all return true.
+	 *
+	 * This method should not be called outside of its own thread.
+	 *
+	 * @throws AuroraException
+	 */
+	protected abstract void update()
+					throws AuroraException;
+
+	/**
+	 * Returns true if the thread is still alive, false otherwise. This should be
+	 * called in favour of <code>getThreading()</code> as it will react to
+	 * uncaught exceptions.
+	 *
+	 * @return
+	 */
+	public final boolean getAlive() {
+		return thread != null ? thread.isAlive() : false;
+	}
+
+	/**
+	 * Returns true if the thread has been halted, false otherwise.
+	 *
+	 * @return If the thread has been halted.
+	 */
+	public final boolean getHalted() {
+		return halted;
+	}
+
+	/**
+	 * Returns true if this thread is currently in the looping stage.
+	 *
+	 * @return If this thread is looping.
+	 */
+	public final boolean getLooping() {
+		return looping;
+	}
 
 	/**
 	 *
@@ -79,6 +176,77 @@ public abstract class SynchroCore implements Runnable {
 	 */
 	public final SynchroCore getMaster() {
 		return master;
+	}
+
+	/**
+	 * Returns true if the program is in the initialisation or looping stage.
+	 *
+	 * @return If this thread is running.
+	 */
+	public final boolean getRunning() {
+		return running;
+	}
+
+	public final Thread getThread() {
+		return thread;
+	}
+
+	/**
+	 * Returns true if the thread exists and is running.
+	 *
+	 * @return If this Synchro is running in a thread.
+	 */
+	public final boolean getThreading() {
+		return threading;
+	}
+
+	/**
+	 * Terminates the update without an exception being thrown. This is useful for
+	 * abruptly ending a update externally without relying on the specific
+	 * mechanics of the update.
+	 */
+	public final void halt() {
+		halted = true;
+	}
+
+	/**
+	 * The thread update.
+	 */
+	@Override
+	public void run() {
+		try {
+			halted = false;
+			threading = true;
+			if (master != null) {
+				master.synchroClose();
+			}
+			initialise();
+			running = true;
+			looping = true;
+			while (!halted &&
+						 (master == null ||
+							(master.getRunning() && master.getAlive())) &&
+						 isRunning()) {
+				update();
+			}
+		} catch (AuroraException ex) {
+			looping = false;
+			running = false;
+			processException(ex);
+		} finally {
+			looping = false;
+			running = false;
+			try {
+				shutdown();
+			} catch (Exception ex) {
+				LOG.log(Level.SEVERE, "Failed to close cleanly due to Exception: {0}",
+								ex);
+			}
+			threading = false;
+			if (master != null) {
+				master.synchroClose();
+			}
+		}
 	}
 
 	/**
@@ -120,8 +288,21 @@ public abstract class SynchroCore implements Runnable {
 		return thread;
 	}
 
-	public final Thread getThread() {
-		return thread;
+	/**
+	 * Safely closes the thread.
+	 */
+	public final void synchroClose() {
+		lock.lock();
+		try {
+			condition.signal();
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 	/**
@@ -173,184 +354,5 @@ public abstract class SynchroCore implements Runnable {
 			lock.unlock();
 		}
 		LOG.log(Level.INFO, "Synchro \"{0}\" is now resuming.", this.name);
-	}
-
-	/**
-	 * Safely closes the thread.
-	 */
-	public final void synchroClose() {
-		lock.lock();
-		try {
-			condition.signal();
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	/**
-	 * Terminates the update without an exception being thrown. This is useful for
-	 * abruptly ending a update externally without relying on the specific
-	 * mechanics of the update.
-	 */
-	public final void halt() {
-		halted = true;
-	}
-
-	/**
-	 * Returns true if the thread has been halted, false otherwise.
-	 *
-	 * @return If the thread has been halted.
-	 */
-	public final boolean getHalted() {
-		return halted;
-	}
-
-	/**
-	 * Returns true if the thread is still alive, false otherwise. This should be
-	 * called in favour of <code>getThreading()</code> as it will react to
-	 * uncaught exceptions.
-	 *
-	 * @return
-	 */
-	public final boolean getAlive() {
-		return thread != null ? thread.isAlive() : false;
-	}
-
-	/**
-	 * Returns true if the thread exists and is running.
-	 *
-	 * @return If this Synchro is running in a thread.
-	 */
-	public final boolean getThreading() {
-		return threading;
-	}
-
-	/**
-	 * Returns true if the program is in the initialisation or looping stage.
-	 *
-	 * @return If this thread is running.
-	 */
-	public final boolean getRunning() {
-		return running;
-	}
-
-	/**
-	 * Returns true if this thread is currently in the looping stage.
-	 *
-	 * @return If this thread is looping.
-	 */
-	public final boolean getLooping() {
-		return looping;
-	}
-
-	/**
-	 * The thread update.
-	 */
-	@Override
-	public void run() {
-		try {
-			halted = false;
-			threading = true;
-			if (master != null) {
-				master.synchroClose();
-			}
-			initialise();
-			running = true;
-			looping = true;
-			while (!halted &&
-						 (master == null ||
-							(master.getRunning() && master.getAlive())) &&
-						 isRunning()) {
-				update();
-			}
-		} catch (AuroraException ex) {
-			looping = false;
-			running = false;
-			processException(ex);
-		} finally {
-			looping = false;
-			running = false;
-			try {
-				shutdown();
-			} catch (Exception ex) {
-				LOG.log(Level.SEVERE, "Failed to close cleanly due to Exception: {0}",
-								ex);
-			}
-			threading = false;
-			if (master != null) {
-				master.synchroClose();
-			}
-		}
-	}
-
-	/**
-	 * The method called at the beginning of thread creation. At this time,
-	 * <code>getThreading()</code> returns true whilst <code>getRunning()</code>
-	 * and <code>getLooping()</code> returns false.
-	 *
-	 * This thread is only called once.
-	 *
-	 * This method should not be called outside of its own thread.
-	 *
-	 * @throws AuroraException
-	 */
-	protected abstract void initialise()
-					throws AuroraException;
-
-	/**
-	 * This method is called at the beginning of each thread update. At this time,
-	 * <code>getThreading()</code>, <code>getRunning()</code> and
-	 * <code>getLooping()</code> all return true.
-	 *
-	 * Returns false if the thread is ending gracefully.
-	 *
-	 * This method should not be called outside of its own thread.
-	 *
-	 * @return If the thread should continue to run.
-	 *
-	 * @throws AuroraException
-	 */
-	protected abstract boolean isRunning()
-					throws AuroraException;
-
-	/**
-	 * This method is called to perform each thread update. At this time,
-	 * <code>getThreading()</code>, <code>getRunning()</code> and
-	 * <code>getLooping()</code> all return true.
-	 *
-	 * This method should not be called outside of its own thread.
-	 *
-	 * @throws AuroraException
-	 */
-	protected abstract void update()
-					throws AuroraException;
-
-	/**
-	 * This method is called to perform fatal exception handling. At this time,
-	 * <code>getThreading()</code> and <code>getRunning()</code> returns true
-	 * whilst <code>getLooping()</code> returns false.
-	 *
-	 * This method is only called once.
-	 *
-	 * This method should not be called outside of its own thread.
-	 *
-	 * @param ex The Fatal Exception
-	 */
-	protected abstract void processException(AuroraException ex);
-
-	/**
-	 * This method is always called when the thread is closing. Releasing of
-	 * resources is performed here and a best effort attempt must be made. At this
-	 * time, <code>getThreading()</code> and <code>getRunning()</code> returns
-	 * true whilst <code>getLooping()</code> returns false.
-	 *
-	 * This is called even when <code>halt()</code> is used to end the thread.
-	 * This method must account for that possibility.
-	 */
-	protected abstract void shutdown();
-
-	@Override
-	public String toString() {
-		return name;
 	}
 }

@@ -16,14 +16,17 @@
  */
 package com.auroraengine.model;
 
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.math.Colour;
 import com.auroraengine.math.LDVec;
+import java.util.logging.Logger;
 
 /**
  *
  * @author LittleRover
  */
 public class Vertex {
+	private static final Logger LOG = AuroraLogs.getLogger(Vertex.class.getName());
 
 	public Vertex(int p_index, LDVec p_position) {
 		this.index = p_index;

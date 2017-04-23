@@ -16,13 +16,17 @@
  */
 package com.auroraengine.math.geometry;
 
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.math.LDVec;
+import java.util.logging.Logger;
 
 /**
  *
  * @author LittleRover
  */
 public class AxisAlignedBoundingBox extends Volume {
+	private static final Logger LOG = AuroraLogs.getLogger(
+					AxisAlignedBoundingBox.class.getName());
 
 	public AxisAlignedBoundingBox(LDVec center, float dx, float dy, float dz) {
 		super(center);
@@ -37,7 +41,9 @@ public class AxisAlignedBoundingBox extends Volume {
 		dy = Math.abs(a.Y() - b.Y());
 		dz = Math.abs(a.Z() - b.Z());
 	}
-	private float dx, dy, dz;
+	private float dx;
+	private float dy;
+	private float dz;
 
 	@Override
 	public Side getSideOf(Plane p_plane) {
@@ -56,6 +62,7 @@ public class AxisAlignedBoundingBox extends Volume {
 		}
 	}
 
+	@Override
 	public float getVolume() {
 		return dx * dy * dz;
 	}

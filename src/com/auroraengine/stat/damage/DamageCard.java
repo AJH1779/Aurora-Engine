@@ -16,40 +16,45 @@
  */
 package com.auroraengine.stat.damage;
 
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
+
 /**
  *
  * @author LittleRover
  */
 public class DamageCard {
+	private static final Logger LOG = AuroraLogs.getLogger(DamageCard.class
+					.getName());
+
 	public DamageCard(ElementType type) {
 
 	}
-
+	private int chp_dmg;
 	private int hp_dmg;
 	private int sp_dmg;
-	private int chp_dmg;
+
+	public int getCHPDamage() {
+		return chp_dmg;
+	}
 
 	public int getHPDamage() {
 		return hp_dmg;
-	}
-
-	public void setHPDamage(int dmg) {
-		hp_dmg = dmg;
 	}
 
 	public int getSPDamage() {
 		return sp_dmg;
 	}
 
-	public void setSPDamage(int dmg) {
-		sp_dmg = dmg;
-	}
-
-	public int getCHPDamage() {
-		return chp_dmg;
-	}
-
 	public void setCHPDamage(int dmg) {
 		chp_dmg = dmg;
+	}
+
+	public void setHPDamage(int dmg) {
+		hp_dmg = dmg;
+	}
+
+	public void setSPDamage(int dmg) {
+		sp_dmg = dmg;
 	}
 }

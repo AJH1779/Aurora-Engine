@@ -5,10 +5,14 @@
  */
 package com.auroraengine.world;
 
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
+
 /**
  *
  * @author LittleRover
  */
 public class SphericalPlanet extends Planet {
-	
+	private static final Logger LOG = AuroraLogs.getLogger(SphericalPlanet.class
+					.getName());
 }

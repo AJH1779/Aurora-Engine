@@ -27,10 +27,9 @@ public class GUI extends GUIObject {
 	public GUI(Viewport view) {
 		this.viewport = view;
 	}
+	private final ArrayList<GUIObject> back_to_front = new ArrayList<>(4);
+	private final ArrayList<GUIObject> front_to_back = new ArrayList<>(4);
 	private final Viewport viewport;
-
-	private final ArrayList<GUIObject> front_to_back = new ArrayList<>(4),
-					back_to_front = new ArrayList<>(4);
 
 	@Override
 	public void renderOpaque() {

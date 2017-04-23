@@ -16,6 +16,7 @@
  */
 package com.auroraengine.math;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.logging.Logger;
 
 /**
@@ -27,7 +28,7 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public final class HDAng {
-	private static final Logger LOG = Logger.getLogger(HDAng.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(HDAng.class.getName());
 
 	/**
 	 * Creates a new zero rotation object.

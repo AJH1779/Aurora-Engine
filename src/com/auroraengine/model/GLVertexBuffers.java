@@ -17,6 +17,7 @@
 package com.auroraengine.model;
 
 import com.auroraengine.client.ClientException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.GLObject;
 import java.nio.ByteBuffer;
@@ -33,7 +34,7 @@ import org.lwjgl.opengl.GL15;
  * @author LittleRover
  */
 public class GLVertexBuffers implements GLObject {
-	private static final Logger LOG = Logger.getLogger(GLVertexBuffers.class
+	private static final Logger LOG = AuroraLogs.getLogger(GLVertexBuffers.class
 					.getName());
 
 	public GLVertexBuffers(Supplier<Vertex> p_supplier) {
@@ -154,6 +155,14 @@ public class GLVertexBuffers implements GLObject {
 		}
 	}
 
+	public void markDynamicUpdate() {
+		this.update_dynamic = true;
+	}
+
+	public void markStaticUpdate() {
+		this.update_static = true;
+	}
+
 	@Override
 	public void unload()
 					throws ClientException {
@@ -175,11 +184,4 @@ public class GLVertexBuffers implements GLObject {
 		updateStream();
 	}
 
-	public void markStaticUpdate() {
-		this.update_static = true;
-	}
-
-	public void markDynamicUpdate() {
-		this.update_dynamic = true;
-	}
 }

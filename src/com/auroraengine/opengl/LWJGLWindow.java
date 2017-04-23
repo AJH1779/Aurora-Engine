@@ -19,9 +19,7 @@ package com.auroraengine.opengl;
 import com.auroraengine.client.Session;
 import com.auroraengine.data.ProgramProperties;
 import com.auroraengine.debug.AuroraLogs;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -45,37 +43,12 @@ public class LWJGLWindow implements GLWindow {
 	public LWJGLWindow(Session session, ProgramProperties properties) {
 		ops = new GLOptions(session, properties);
 	}
-	private final GLOptions ops;
-	private GLOptions next_options;
+	private int height;
 	private volatile boolean iscreated = false;
-	private int width, height, sync;
-
-	@Override
-	public void load() {
-	}
-
-	@Override
-	public void unload() {
-	}
-
-	@Override
-	public void create()
-					throws GLException {
-		LOG.info("Creating new LWJGL Window.");
-		try {
-			updateDisplay();
-			Display.create();
-		} catch (LWJGLException ex) {
-			throw new GLException(ex);
-		}
-
-		LOG.info("LWJGL Window successfully created.");
-		iscreated = true;
-
-		// Then there is the generic GL Initialisation
-		GLWindow.updateGL();
-		LOG.warning("Still using the old GL system.");
-	}
+	private GLOptions next_options;
+	private final GLOptions ops;
+	private int sync;
+	private int width;
 
 	private void updateDisplay()
 					throws LWJGLException, GLException {
@@ -131,9 +104,73 @@ public class LWJGLWindow implements GLWindow {
 	}
 
 	@Override
+	public void create()
+					throws GLException {
+		LOG.info("Creating new LWJGL Window.");
+		try {
+			updateDisplay();
+			Display.create();
+		} catch (LWJGLException ex) {
+			throw new GLException(ex);
+		}
+
+		LOG.info("LWJGL Window successfully created.");
+		iscreated = true;
+
+		// Then there is the generic GL Initialisation
+		GLWindow.updateGL();
+		LOG.warning("Still using the old GL system.");
+	}
+
+	@Override
+	public void destroy() {
+		iscreated = false;
+		Display.destroy();
+		LOG.info("Destroyed LWJGL Window");
+	}
+
+	@Override
+	public GLOptions getGLOptions() {
+		return new GLOptions(ops);
+	}
+
+	@Override
+	public int getHeight() {
+		return height;
+	}
+
+	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	@Override
 	public boolean isCloseRequested()
 					throws GLException {
 		return Display.isCloseRequested();
+	}
+
+	@Override
+	public boolean isCreated() {
+		return iscreated;
+	}
+
+	@Override
+	public boolean isLoaded() {
+		return true;
+	}
+
+	@Override
+	public void load() {
+	}
+
+	@Override
+	public void setGLOptions(GLOptions new_ops) {
+		next_options = new_ops;
+	}
+
+	@Override
+	public void unload() {
 	}
 
 	@Override
@@ -156,42 +193,5 @@ public class LWJGLWindow implements GLWindow {
 		}
 		// Remove this and move to the camera?
 		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-	}
-
-	@Override
-	public GLOptions getGLOptions() {
-		return new GLOptions(ops);
-	}
-
-	@Override
-	public void setGLOptions(GLOptions new_ops) {
-		next_options = new_ops;
-	}
-
-	@Override
-	public void destroy() {
-		iscreated = false;
-		Display.destroy();
-		LOG.info("Destroyed LWJGL Window");
-	}
-
-	@Override
-	public boolean isLoaded() {
-		return true;
-	}
-
-	@Override
-	public boolean isCreated() {
-		return iscreated;
-	}
-
-	@Override
-	public int getWidth() {
-		return width;
-	}
-
-	@Override
-	public int getHeight() {
-		return height;
 	}
 }

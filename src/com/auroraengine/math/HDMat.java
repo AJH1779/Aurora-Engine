@@ -16,6 +16,7 @@
  */
 package com.auroraengine.math;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
@@ -36,7 +37,7 @@ public final class HDMat implements Cloneable {
 																												0f, 0f, 0f, 1f, 0f, 0f,
 																												0f,
 																												0f, 1f};
-	private static final Logger LOG = Logger.getLogger(HDMat.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(HDMat.class.getName());
 
 	/**
 	 * Performs the matrix multiplication of ref1 on ref2, returning the result as

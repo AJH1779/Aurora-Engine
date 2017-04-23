@@ -16,6 +16,7 @@
  */
 package com.auroraengine.creature.mind;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.logging.Logger;
 
 /**
@@ -24,7 +25,7 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class Mind {
-	private static final Logger LOG = Logger.getLogger(Mind.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(Mind.class.getName());
 
 	private Mind() {
 	}

@@ -16,7 +16,6 @@
  */
 package com.auroraengine.opengl;
 
-import com.auroraengine.debug.AuroraException;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -30,6 +29,7 @@ public interface GLWindow extends GLObject {
 	 *
 	 * @throws GLException
 	 */
+	@Override
 	public void create()
 					throws GLException;
 
@@ -50,6 +50,7 @@ public interface GLWindow extends GLObject {
 	 *
 	 * @throws GLException
 	 */
+	@Override
 	public void update()
 					throws GLException;
 
@@ -72,6 +73,7 @@ public interface GLWindow extends GLObject {
 	 * Destroys the display. Should be called after create() and must be called
 	 * before quitting the program.
 	 */
+	@Override
 	public void destroy();
 
 	// TODO: Tie this to the cameras rather than having it as a separate thing.

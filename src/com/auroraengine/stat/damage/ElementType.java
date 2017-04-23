@@ -90,6 +90,7 @@ public enum ElementType {
 	private final List<StatusEffect> status_effects;
 	private final List<CriticalHit> critical_hits;
 
+	@SuppressWarnings("ReturnOfCollectionOrArrayField")
 	public final List<StatusEffect> getStatusEffects() {
 		return status_effects;
 	}

@@ -16,10 +16,17 @@
  */
 package com.auroraengine.stat.damage;
 
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
+
 /**
  *
  * @author LittleRover
  */
 public class DamagePacket {
+	private static final Logger LOG = AuroraLogs.getLogger(DamagePacket.class
+					.getName());
 
+	private DamagePacket() {
+	}
 }

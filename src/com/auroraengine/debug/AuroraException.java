@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class AuroraException extends Exception {
-	private static final Logger LOG = Logger.getLogger(AuroraException.class
+	private static final Logger LOG = AuroraLogs.getLogger(AuroraException.class
 					.getName());
 	private static final long serialVersionUID = 1L;
 

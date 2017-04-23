@@ -17,10 +17,12 @@
 package com.auroraengine.model;
 
 import com.auroraengine.client.ClientException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.GLObject;
 import java.nio.ByteBuffer;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
@@ -29,6 +31,8 @@ import org.lwjgl.opengl.GL15;
  * @author LittleRover
  */
 public class VertexBuffer implements GLObject {
+	private static final Logger LOG = AuroraLogs.getLogger(VertexBuffer.class
+					.getName());
 
 	public VertexBuffer(Supplier<ByteBuffer> source) {
 		this(source, GL15.GL_STATIC_DRAW);

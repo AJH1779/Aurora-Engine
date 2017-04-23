@@ -16,6 +16,9 @@
  */
 package com.auroraengine.math;
 
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
+
 /**
  * <code>LDAng</code>s are modifiable objects that denote a rotation in
  * Cartesian space using float precision. It is important to duplicate the
@@ -25,6 +28,8 @@ package com.auroraengine.math;
  * @author LittleRover
  */
 public final class LDAng {
+	private static final Logger LOG = AuroraLogs.getLogger(LDAng.class.getName());
+
 	/**
 	 * Creates a new zero rotation object.
 	 */

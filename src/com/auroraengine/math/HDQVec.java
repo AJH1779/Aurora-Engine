@@ -16,13 +16,14 @@
  */
 package com.auroraengine.math;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.math.BigDecimal;
-import java.nio.ByteBuffer;
-import static java.math.BigDecimal.*;
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
 import java.math.MathContext;
-import java.math.RoundingMode;
-
+import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 // TODO: Update to be of the same structure as LD and HD variants.
 /**
@@ -33,10 +34,65 @@ import java.util.Arrays;
  *
  * @author LittleRover
  */
-public final class HDQVec {
-
-	public static final BigDecimal TWO = new BigDecimal(2);
+public final class HDQVec implements Cloneable {
+	private static final Logger LOG = AuroraLogs.getLogger(HDQVec.class.getName());
 	public static final MathContext CONTEXT = MathContext.DECIMAL128;
+	public static final BigDecimal TWO = new BigDecimal(2);
+
+	/**
+	 * Returns the average of the vectors, that is the sum of all vectors divided
+	 * by the number of vectors provided.
+	 *
+	 * @param vecs The vectors to average.
+	 *
+	 * @return The average vector.
+	 */
+	public static HDQVec getAverage(HDQVec... vecs) {
+		HDQVec avg = new HDQVec();
+		for (HDQVec vec : vecs) {
+			avg.translate(vec);
+		}
+		return avg.invscale(new BigDecimal(vecs.length, CONTEXT));
+	}
+
+	/**
+	 * Returns the distance between A and B. This is equivalent to getting the
+	 * length of the vector produced from <code>getDistVec()</code>.
+	 *
+	 * @param A The starting point
+	 * @param B The destination point
+	 *
+	 * @return The separation
+	 */
+	public static BigDecimal getDist(HDQVec A, HDQVec B) {
+		return sqrt(getSqrDist(A, B));
+	}
+
+	/**
+	 * Returns the vector which denotes B - A, which is the translation vector for
+	 * moving from the point A to point B.
+	 *
+	 * @param A The starting point
+	 * @param B The destination point
+	 *
+	 * @return The translation vector
+	 */
+	public static HDQVec getDistVec(HDQVec A, HDQVec B) {
+		return new HDQVec(B).negTranslate(A);
+	}
+
+	/**
+	 * Returns the square distance between A and B. This is equivalent to getting
+	 * the square length of the vector produced from <code>getDistVec()</code>.
+	 *
+	 * @param A The starting point
+	 * @param B The destination point
+	 *
+	 * @return The separation squared
+	 */
+	public static BigDecimal getSqrDist(HDQVec A, HDQVec B) {
+		return getDistVec(A, B).getSqrLen();
+	}
 
 	// The Static Method classes
 	/**
@@ -67,61 +123,6 @@ public final class HDQVec {
 			x1 = x1.divide(TWO, CONTEXT);
 		}
 		return x1;
-	}
-
-	/**
-	 * Returns the average of the vectors, that is the sum of all vectors divided
-	 * by the number of vectors provided.
-	 *
-	 * @param vecs The vectors to average.
-	 *
-	 * @return The average vector.
-	 */
-	public static HDQVec getAverage(HDQVec... vecs) {
-		HDQVec avg = new HDQVec();
-		for (HDQVec vec : vecs) {
-			avg.translate(vec);
-		}
-		return avg.invscale(new BigDecimal(vecs.length, CONTEXT));
-	}
-
-	/**
-	 * Returns the vector which denotes B - A, which is the translation vector for
-	 * moving from the point A to point B.
-	 *
-	 * @param A The starting point
-	 * @param B The destination point
-	 *
-	 * @return The translation vector
-	 */
-	public static HDQVec getDistVec(HDQVec A, HDQVec B) {
-		return new HDQVec(B).negTranslate(A);
-	}
-
-	/**
-	 * Returns the distance between A and B. This is equivalent to getting the
-	 * length of the vector produced from <code>getDistVec()</code>.
-	 *
-	 * @param A The starting point
-	 * @param B The destination point
-	 *
-	 * @return The separation
-	 */
-	public static BigDecimal getDist(HDQVec A, HDQVec B) {
-		return sqrt(getSqrDist(A, B));
-	}
-
-	/**
-	 * Returns the square distance between A and B. This is equivalent to getting
-	 * the square length of the vector produced from <code>getDistVec()</code>.
-	 *
-	 * @param A The starting point
-	 * @param B The destination point
-	 *
-	 * @return The separation squared
-	 */
-	public static BigDecimal getSqrDist(HDQVec A, HDQVec B) {
-		return getDistVec(A, B).getSqrLen();
 	}
 
 	// The Local Method classes
@@ -197,49 +198,6 @@ public final class HDQVec {
 	}
 
 	/**
-	 * Returns the Y component of this vector.
-	 *
-	 * @return The Y component
-	 */
-	public BigDecimal Y() {
-		return data[1];
-	}
-
-	/**
-	 * Returns the Z component of this vector.
-	 *
-	 * @return The Z component
-	 */
-	public BigDecimal Z() {
-		return data[2];
-	}
-
-	/**
-	 * Returns the array which stores the X, Y, and Z components of this vector.
-	 * Modifying this modifies the components in this vector.
-	 *
-	 * @return
-	 */
-	public BigDecimal[] array() {
-		return data;
-	}
-
-	/**
-	 * Places the X, Y, and Z components into the provided buffer in that order,
-	 * then returns the provided buffer.
-	 *
-	 * @param bb The Buffer
-	 *
-	 * @return The Provided Buffer
-	 */
-	public ByteBuffer write(ByteBuffer bb) {
-		bb.putDouble(data[0].doubleValue());
-		bb.putDouble(data[1].doubleValue());
-		bb.putDouble(data[2].doubleValue());
-		return bb;
-	}
-
-	/**
 	 * Sets the X component to the provided value, then returns this vector.
 	 *
 	 * @param x The new X component
@@ -260,6 +218,15 @@ public final class HDQVec {
 	public HDQVec X(BigDecimal x) {
 		data[0] = x;
 		return this;
+	}
+
+	/**
+	 * Returns the Y component of this vector.
+	 *
+	 * @return The Y component
+	 */
+	public BigDecimal Y() {
+		return data[1];
 	}
 
 	/**
@@ -286,6 +253,15 @@ public final class HDQVec {
 	}
 
 	/**
+	 * Returns the Z component of this vector.
+	 *
+	 * @return The Z component
+	 */
+	public BigDecimal Z() {
+		return data[2];
+	}
+
+	/**
 	 * Sets the Z component to the provided value, then returns this vector.
 	 *
 	 * @param z The new Z component
@@ -309,159 +285,23 @@ public final class HDQVec {
 	}
 
 	/**
-	 * Sets the X, Y, and Z components to the provided values, then returns this
-	 * vector.
+	 * Returns the array which stores the X, Y, and Z components of this vector.
+	 * Modifying this modifies the components in this vector.
 	 *
-	 * @param x The new X component
-	 * @param y The new Y component
-	 * @param z The new Z component
-	 *
-	 * @return This
+	 * @return
 	 */
-	public HDQVec set(double x, double y, double z) {
-		return set(new BigDecimal(x, CONTEXT), new BigDecimal(y, CONTEXT),
-							 new BigDecimal(z, CONTEXT));
+	public BigDecimal[] array() {
+		return data;
 	}
 
 	/**
-	 * Sets the X, Y, and Z components to the provided values, then returns this
-	 * vector.
+	 * Creates a copy of this, equivalent to calling toLD()
 	 *
-	 * @param x The new X component
-	 * @param y The new Y component
-	 * @param z The new Z component
-	 *
-	 * @return This
+	 * @return
 	 */
-	public HDQVec set(BigDecimal x, BigDecimal y, BigDecimal z) {
-		data[0] = x;
-		data[1] = y;
-		data[2] = z;
-		return this;
-	}
-
-	/**
-	 * Sets the X, Y, and Z components to those of the provided vector, then
-	 * returns this vector.
-	 *
-	 * @param v The vector to copy
-	 *
-	 * @return This
-	 */
-	public HDQVec set(HDQVec v) {
-		data[0] = v.data[0];
-		data[1] = v.data[1];
-		data[2] = v.data[2];
-		return this;
-	}
-
-	/**
-	 * Returns the length of this vector. If used for comparison, try using the
-	 * faster <code>sqrLength()</code> method.
-	 *
-	 * @return The length
-	 */
-	public BigDecimal getLen() {
-		return sqrt(dot(this));
-	}
-
-	/**
-	 * Returns the square length of this vector. This is faster than finding the
-	 * length.
-	 *
-	 * @return The square length
-	 */
-	public BigDecimal getSqrLen() {
-		return dot(this);
-	}
-
-	/**
-	 * Adds the provided X, Y, and Z values to the corresponding components in
-	 * this vector, then returns this. This has the effect of translating this by
-	 * the specified amount in each component.
-	 *
-	 * @param x The X component to add
-	 * @param y The Y component to add
-	 * @param z The Z component to add
-	 *
-	 * @return This
-	 */
-	public HDQVec translate(BigDecimal x, BigDecimal y, BigDecimal z) {
-		data[0] = data[0].add(x, CONTEXT);
-		data[1] = data[1].add(y, CONTEXT);
-		data[2] = data[2].add(z, CONTEXT);
-		return this;
-	}
-
-	/**
-	 * Adds the provided vector to this vector, then returns this. This has the
-	 * effect of translating this by the specified vector.
-	 *
-	 * @param v The translation vector
-	 *
-	 * @return This
-	 */
-	public HDQVec translate(HDQVec v) {
-		data[0] = data[0].add(v.data[0], CONTEXT);
-		data[1] = data[1].add(v.data[1], CONTEXT);
-		data[2] = data[2].add(v.data[2], CONTEXT);
-		return this;
-	}
-
-	/**
-	 * Subtracts the provided vector to this vector, then returns this. This has
-	 * the effect of translating this by the negative of the specified vector.
-	 *
-	 * @param v The translation vector
-	 *
-	 * @return This
-	 */
-	public HDQVec negTranslate(HDQVec v) {
-		data[0] = data[0].subtract(v.data[0], CONTEXT);
-		data[1] = data[1].subtract(v.data[1], CONTEXT);
-		data[2] = data[2].subtract(v.data[2], CONTEXT);
-		return this;
-	}
-
-	/**
-	 * Scales all components in this vector by the specified scale factor, then
-	 * returns this.
-	 *
-	 * @param s The scale factor
-	 *
-	 * @return This
-	 */
-	public HDQVec scale(BigDecimal s) {
-		data[0] = data[0].multiply(s, CONTEXT);
-		data[1] = data[1].multiply(s, CONTEXT);
-		data[2] = data[2].multiply(s, CONTEXT);
-		return this;
-	}
-
-	/**
-	 * Scales all components in this vector by the inverse of the specified scale
-	 * factor, then returns this.
-	 *
-	 * @param s The inverse of the scale factor
-	 *
-	 * @return This
-	 */
-	public HDQVec invscale(BigDecimal s) {
-		return scale(ONE.divide(s, CONTEXT));
-	}
-
-	/**
-	 * Returns the dot product of this vector and the specified vector.
-	 *
-	 * @param v The second vector
-	 *
-	 * @return The dot product
-	 */
-	public BigDecimal dot(HDQVec v) {
-		return data[0].multiply(data[0], CONTEXT).add(data[1].multiply(data[1],
-																																	 CONTEXT),
-																									CONTEXT).add(data[2].multiply(
-										data[2], CONTEXT), CONTEXT);
+	@Override
+	public HDQVec clone() {
+		return new HDQVec(this);
 	}
 
 	/**
@@ -485,12 +325,95 @@ public final class HDQVec {
 	}
 
 	/**
-	 * Normalises this vector (sets the length to 1), then returns this.
+	 * Returns the dot product of this vector and the specified vector.
+	 *
+	 * @param v The second vector
+	 *
+	 * @return The dot product
+	 */
+	public BigDecimal dot(HDQVec v) {
+		return data[0].multiply(data[0], CONTEXT).add(data[1].multiply(data[1],
+																																	 CONTEXT),
+																									CONTEXT).add(data[2].multiply(
+										data[2], CONTEXT), CONTEXT);
+	}
+
+	/**
+	 * Returns true if the provided object is a <code>HDQVec</code> with the same
+	 * components as this. Use a comparison of square separation with some
+	 * tolerance to determine when two vectors are similar
+	 *
+	 * @param obj The object to check
+	 *
+	 * @return True if the provided object is the same as this.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final HDQVec other = (HDQVec) obj;
+		return Arrays.deepEquals(this.data, other.data);
+	}
+
+	/**
+	 * Returns the length of this vector. If used for comparison, try using the
+	 * faster <code>sqrLength()</code> method.
+	 *
+	 * @return The length
+	 */
+	public BigDecimal getLen() {
+		return sqrt(dot(this));
+	}
+
+	/**
+	 * Returns the square length of this vector. This is faster than finding the
+	 * length.
+	 *
+	 * @return The square length
+	 */
+	public BigDecimal getSqrLen() {
+		return dot(this);
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 83 * hash + Arrays.deepHashCode(this.data);
+		return hash;
+	}
+
+	/**
+	 * Scales all components in this vector by the inverse of the specified scale
+	 * factor, then returns this.
+	 *
+	 * @param s The inverse of the scale factor
 	 *
 	 * @return This
 	 */
-	public HDQVec normalise() {
-		return invscale(getLen());
+	public HDQVec invscale(BigDecimal s) {
+		return scale(ONE.divide(s, CONTEXT));
+	}
+
+	/**
+	 * Subtracts the provided vector to this vector, then returns this. This has
+	 * the effect of translating this by the negative of the specified vector.
+	 *
+	 * @param v The translation vector
+	 *
+	 * @return This
+	 */
+	public HDQVec negTranslate(HDQVec v) {
+		data[0] = data[0].subtract(v.data[0], CONTEXT);
+		data[1] = data[1].subtract(v.data[1], CONTEXT);
+		data[2] = data[2].subtract(v.data[2], CONTEXT);
+		return this;
 	}
 
 	/**
@@ -503,6 +426,15 @@ public final class HDQVec {
 		data[1] = data[1].negate();
 		data[2] = data[2].negate();
 		return this;
+	}
+
+	/**
+	 * Normalises this vector (sets the length to 1), then returns this.
+	 *
+	 * @return This
+	 */
+	public HDQVec normalise() {
+		return invscale(getLen());
 	}
 
 	/**
@@ -563,13 +495,65 @@ public final class HDQVec {
 	}
 
 	/**
-	 * Returns a copy of this vector as a <code>LDVec</code>.
+	 * Scales all components in this vector by the specified scale factor, then
+	 * returns this.
 	 *
-	 * @return A copy of This
+	 * @param s The scale factor
+	 *
+	 * @return This
 	 */
-	public LDVec toLD() {
-		return new LDVec(data[0].floatValue(), data[1].floatValue(), data[2]
-										 .floatValue());
+	public HDQVec scale(BigDecimal s) {
+		data[0] = data[0].multiply(s, CONTEXT);
+		data[1] = data[1].multiply(s, CONTEXT);
+		data[2] = data[2].multiply(s, CONTEXT);
+		return this;
+	}
+
+	/**
+	 * Sets the X, Y, and Z components to the provided values, then returns this
+	 * vector.
+	 *
+	 * @param x The new X component
+	 * @param y The new Y component
+	 * @param z The new Z component
+	 *
+	 * @return This
+	 */
+	public HDQVec set(double x, double y, double z) {
+		return set(new BigDecimal(x, CONTEXT), new BigDecimal(y, CONTEXT),
+							 new BigDecimal(z, CONTEXT));
+	}
+
+	/**
+	 * Sets the X, Y, and Z components to the provided values, then returns this
+	 * vector.
+	 *
+	 * @param x The new X component
+	 * @param y The new Y component
+	 * @param z The new Z component
+	 *
+	 * @return This
+	 */
+	public HDQVec set(BigDecimal x, BigDecimal y, BigDecimal z) {
+		data[0] = x;
+		data[1] = y;
+		data[2] = z;
+		return this;
+	}
+
+	/**
+	 * Sets the X, Y, and Z components to those of the provided vector, then
+	 * returns this vector.
+	 *
+	 * @param v The vector to copy
+	 *
+	 * @return This
+	 */
+	public HDQVec set(HDQVec v) {
+		data[0] = v.data[0];
+		data[1] = v.data[1];
+		data[2] = v.data[2];
+		return this;
 	}
 
 	/**
@@ -592,13 +576,13 @@ public final class HDQVec {
 	}
 
 	/**
-	 * Creates a copy of this, equivalent to calling toLD()
+	 * Returns a copy of this vector as a <code>LDVec</code>.
 	 *
-	 * @return
+	 * @return A copy of This
 	 */
-	@Override
-	public HDQVec clone() {
-		return new HDQVec(this);
+	public LDVec toLD() {
+		return new LDVec(data[0].floatValue(), data[1].floatValue(), data[2]
+										 .floatValue());
 	}
 
 	/**
@@ -613,36 +597,50 @@ public final class HDQVec {
 	}
 
 	/**
-	 * Returns true if the provided object is a <code>HDQVec</code> with the same
-	 * components as this. Use a comparison of square separation with some
-	 * tolerance to determine when two vectors are similar
+	 * Adds the provided X, Y, and Z values to the corresponding components in
+	 * this vector, then returns this. This has the effect of translating this by
+	 * the specified amount in each component.
 	 *
-	 * @param obj The object to check
+	 * @param x The X component to add
+	 * @param y The Y component to add
+	 * @param z The Z component to add
 	 *
-	 * @return True if the provided object is the same as this.
+	 * @return This
 	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final HDQVec other = (HDQVec) obj;
-		if (!Arrays.deepEquals(this.data, other.data)) {
-			return false;
-		}
-		return true;
+	public HDQVec translate(BigDecimal x, BigDecimal y, BigDecimal z) {
+		data[0] = data[0].add(x, CONTEXT);
+		data[1] = data[1].add(y, CONTEXT);
+		data[2] = data[2].add(z, CONTEXT);
+		return this;
 	}
 
-	@Override
-	public int hashCode() {
-		int hash = 7;
-		hash = 83 * hash + Arrays.deepHashCode(this.data);
-		return hash;
+	/**
+	 * Adds the provided vector to this vector, then returns this. This has the
+	 * effect of translating this by the specified vector.
+	 *
+	 * @param v The translation vector
+	 *
+	 * @return This
+	 */
+	public HDQVec translate(HDQVec v) {
+		data[0] = data[0].add(v.data[0], CONTEXT);
+		data[1] = data[1].add(v.data[1], CONTEXT);
+		data[2] = data[2].add(v.data[2], CONTEXT);
+		return this;
+	}
+
+	/**
+	 * Places the X, Y, and Z components into the provided buffer in that order,
+	 * then returns the provided buffer.
+	 *
+	 * @param bb The Buffer
+	 *
+	 * @return The Provided Buffer
+	 */
+	public ByteBuffer write(ByteBuffer bb) {
+		bb.putDouble(data[0].doubleValue());
+		bb.putDouble(data[1].doubleValue());
+		bb.putDouble(data[2].doubleValue());
+		return bb;
 	}
 }

@@ -16,11 +16,12 @@
  */
 package com.auroraengine.math;
 
+import com.auroraengine.debug.AuroraLogs;
+import static com.auroraengine.math.HDQVec.CONTEXT;
 import java.math.BigDecimal;
-import static java.math.BigDecimal.*;
-import static com.auroraengine.math.HDQVec.*;
-import java.math.MathContext;
-// TODO: Update to be of the same structure as LD and HD variants.
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
+import java.util.logging.Logger;
 
 /**
  * <code>HDAng</code>s are modifiable objects that denote a rotation in
@@ -33,6 +34,7 @@ import java.math.MathContext;
  * @author LittleRover
  */
 public final class HDQAng {
+	private static final Logger LOG = AuroraLogs.getLogger(HDQAng.class.getName());
 
 	/**
 	 * Creates a new zero rotation object.
@@ -81,8 +83,53 @@ public final class HDQAng {
 	public HDQAng(HDQAng ang) {
 		set(ang);
 	}
-	private final HDQVec vec = new HDQVec(ZERO, ZERO, ONE);
 	private final BigDecimal[] dat = new BigDecimal[3];
+	private final HDQVec vec = new HDQVec(ZERO, ZERO, ONE);
+
+	/**
+	 * Returns the X component of the rotation vector.
+	 *
+	 * @return The X component
+	 */
+	public BigDecimal X() {
+		return vec.X();
+	}
+
+	/**
+	 * Returns the Y component of the rotation vector.
+	 *
+	 * @return The Y component
+	 */
+	public BigDecimal Y() {
+		return vec.Y();
+	}
+
+	/**
+	 * Returns the Z component of the rotation vector.
+	 *
+	 * @return The Z component
+	 */
+	public BigDecimal Z() {
+		return vec.Z();
+	}
+
+	/**
+	 * Returns the rotation angle.
+	 *
+	 * @return
+	 */
+	public BigDecimal ang() {
+		return dat[0];
+	}
+
+	/**
+	 * Returns the cosine of the rotation angle.
+	 *
+	 * @return
+	 */
+	public BigDecimal cos() {
+		return dat[2];
+	}
 
 	/**
 	 * Sets the X, Y, and Z components of the rotation vector to the provided
@@ -103,7 +150,7 @@ public final class HDQAng {
 	 * Sets the X, Y, and Z components of the rotation vector to those of the
 	 * provided vector, then returns this.
 	 *
-	 * @param v The vector to copy
+	 * @param vec The vector to copy
 	 *
 	 * @return This
 	 */
@@ -149,8 +196,8 @@ public final class HDQAng {
 	 * provided vector and the rotation angle to the specified amount, then
 	 * returns this.
 	 *
-	 * @param v   The vector to copy
 	 * @param ang The new rotation angle
+	 * @param vec The vector to copy
 	 *
 	 * @return This
 	 */
@@ -175,30 +222,12 @@ public final class HDQAng {
 	}
 
 	/**
-	 * Returns the X component of the rotation vector.
+	 * Returns the sine of the rotation angle.
 	 *
-	 * @return The X component
+	 * @return
 	 */
-	public BigDecimal X() {
-		return vec.X();
-	}
-
-	/**
-	 * Returns the Y component of the rotation vector.
-	 *
-	 * @return The Y component
-	 */
-	public BigDecimal Y() {
-		return vec.Y();
-	}
-
-	/**
-	 * Returns the Z component of the rotation vector.
-	 *
-	 * @return The Z component
-	 */
-	public BigDecimal Z() {
-		return vec.Z();
+	public BigDecimal sin() {
+		return dat[1];
 	}
 
 	/**
@@ -211,30 +240,4 @@ public final class HDQAng {
 		return vec;
 	}
 
-	/**
-	 * Returns the rotation angle.
-	 *
-	 * @return
-	 */
-	public BigDecimal ang() {
-		return dat[0];
-	}
-
-	/**
-	 * Returns the sine of the rotation angle.
-	 *
-	 * @return
-	 */
-	public BigDecimal sin() {
-		return dat[1];
-	}
-
-	/**
-	 * Returns the cosine of the rotation angle.
-	 *
-	 * @return
-	 */
-	public BigDecimal cos() {
-		return dat[2];
-	}
 }

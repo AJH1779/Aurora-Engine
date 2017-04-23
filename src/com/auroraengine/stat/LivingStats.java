@@ -34,16 +34,28 @@ public class LivingStats {
 			major_stats.put(type, new MajorStat(type));
 		}
 	}
-
-	private int hp = 4, hp_max = 4, hp_max_max = 4;
-	private int sp = 4, sp_max = 4, sp_max_max = 4;
-	private int chp = 2, chp_max = 2;
+	private int chp = 2;
+	private int chp_max = 2;
+	private int hp = 4;
+	private int hp_max = 4;
+	private int hp_max_max = 4;
 	private int hp_per_chp = 2;
-	private int sp_per_chp = 2;
-	private int mp = 2, mp_max = 2;
-
 	private final HashMap<MajorStatType, MajorStat> major_stats = new HashMap<>(
 					MajorStatType.values().length);
+	private int mp = 2;
+	private int mp_max = 2;
+	private int sp = 4;
+	private int sp_max = 4;
+	private int sp_max_max = 4;
+	private int sp_per_chp = 2;
+
+	public int getCHP() {
+		return chp;
+	}
+
+	public int getCHPMax() {
+		return chp_max;
+	}
 
 	public int getHP() {
 		return hp;
@@ -55,6 +67,22 @@ public class LivingStats {
 
 	public int getHPMaxMax() {
 		return hp_max_max;
+	}
+
+	public int getHPperCHP() {
+		return hp_per_chp;
+	}
+
+	public int getMP() {
+		return mp;
+	}
+
+	public int getMPMax() {
+		return mp_max;
+	}
+
+	public MajorStat getMajorStat(MajorStatType t) {
+		return major_stats.get(t);
 	}
 
 	public int getSP() {
@@ -69,32 +97,8 @@ public class LivingStats {
 		return sp_max_max;
 	}
 
-	public int getCHP() {
-		return chp;
-	}
-
-	public int getCHPMax() {
-		return chp_max;
-	}
-
-	public int getMP() {
-		return mp;
-	}
-
-	public int getMPMax() {
-		return mp_max;
-	}
-
-	public int getHPperCHP() {
-		return hp_per_chp;
-	}
-
 	public int getSPperCHP() {
 		return sp_per_chp;
-	}
-
-	public MajorStat getMajorStat(MajorStatType t) {
-		return major_stats.get(t);
 	}
 
 	public boolean hasAbility(Ability a) {

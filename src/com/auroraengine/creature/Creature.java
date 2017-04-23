@@ -16,6 +16,7 @@
  */
 package com.auroraengine.creature;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.logging.Logger;
 
 /**
@@ -25,7 +26,8 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class Creature {
-	private static final Logger LOG = Logger.getLogger(Creature.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(Creature.class
+					.getName());
 
 	private Creature() {
 

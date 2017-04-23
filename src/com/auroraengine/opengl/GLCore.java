@@ -56,9 +56,8 @@ public class GLCore extends SynchroCore {
 		viewports.add(full);
 	}
 	private final ClientCore core;
-	private final GLWindow window;
-
 	private final ArrayList<Viewport> viewports;
+	private final GLWindow window;
 
 	@Override
 	protected void initialise()
@@ -72,6 +71,20 @@ public class GLCore extends SynchroCore {
 	protected boolean isRunning()
 					throws GLException {
 		return !window.isCloseRequested();
+	}
+
+	@Override
+	protected void processException(AuroraException ex) {
+		LOG.log(Level.SEVERE, "Fatal Exception: {0}", ex);
+	}
+
+	@Override
+	protected void shutdown() {
+		LOG.info("Shutting Down");
+		if (window != null) {
+			window.destroy();
+		}
+		LOG.info("Shut Down");
 	}
 
 	@Override
@@ -90,19 +103,5 @@ public class GLCore extends SynchroCore {
 								.toString());
 			}
 		});
-	}
-
-	@Override
-	protected void shutdown() {
-		LOG.info("Shutting Down");
-		if (window != null) {
-			window.destroy();
-		}
-		LOG.info("Shut Down");
-	}
-
-	@Override
-	protected void processException(AuroraException ex) {
-		LOG.log(Level.SEVERE, "Fatal Exception: {0}", ex);
 	}
 }

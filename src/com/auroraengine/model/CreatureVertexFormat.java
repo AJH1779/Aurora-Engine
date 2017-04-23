@@ -16,8 +16,10 @@
  */
 package com.auroraengine.model;
 
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.opengl.GLVersion;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.lwjgl.opengl.GL11;
 
@@ -27,6 +29,9 @@ import org.lwjgl.opengl.GL11;
  */
 @GLVersion(version = 15)
 public class CreatureVertexFormat implements VertexFormat {
+	private static final Logger LOG = AuroraLogs.getLogger(
+					CreatureVertexFormat.class.getName());
+
 	@Override
 	public void disable() {
 		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);

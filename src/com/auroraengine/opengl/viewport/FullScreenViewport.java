@@ -16,29 +16,37 @@
  */
 package com.auroraengine.opengl.viewport;
 
-import com.auroraengine.opengl.GLException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.opengl.GLWindow;
+import java.util.logging.Logger;
 
 public class FullScreenViewport extends Viewport {
+	private static final Logger LOG = AuroraLogs.getLogger(
+					FullScreenViewport.class.getName());
 
 	public FullScreenViewport(GLWindow window) {
 		this.window = window;
 	}
 	private final GLWindow window;
 
-	public int getX() {
-		return 0;
+	@Override
+	public int getHeight() {
+		return window.getHeight();
 	}
 
-	public int getY() {
-		return 0;
-	}
-
+	@Override
 	public int getWidth() {
 		return window.getWidth();
 	}
 
-	public int getHeight() {
-		return window.getHeight();
+	@Override
+	public int getX() {
+		return 0;
 	}
+
+	@Override
+	public int getY() {
+		return 0;
+	}
+
 }

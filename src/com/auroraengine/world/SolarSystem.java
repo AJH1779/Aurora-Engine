@@ -5,12 +5,13 @@
  */
 package com.auroraengine.world;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
 public class SolarSystem extends CelestialFeature {
-
-	private static final Logger LOG = Logger.getLogger(SolarSystem.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(SolarSystem.class
+					.getName());
 
 	public SolarSystem() {
 		//

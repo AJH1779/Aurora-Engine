@@ -16,7 +16,9 @@
  */
 package com.auroraengine.model;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.lwjgl.opengl.GL11;
 
@@ -25,6 +27,8 @@ import org.lwjgl.opengl.GL11;
  * @author LittleRover
  */
 public class ModifiableVertexFormat implements VertexFormat {
+	private static final Logger LOG = AuroraLogs.getLogger(
+					ModifiableVertexFormat.class.getName());
 
 	public ModifiableVertexFormat() {
 

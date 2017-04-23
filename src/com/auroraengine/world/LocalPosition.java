@@ -5,6 +5,7 @@
  */
 package com.auroraengine.world;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.logging.Logger;
 
 /**
@@ -12,7 +13,7 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public final class LocalPosition {
-	private static final Logger LOG = Logger.getLogger(LocalPosition.class
+	private static final Logger LOG = AuroraLogs.getLogger(LocalPosition.class
 					.getName());
 
 	/**

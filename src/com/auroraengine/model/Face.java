@@ -16,7 +16,8 @@
  */
 package com.auroraengine.model;
 
-import com.auroraengine.utils.NotNull;
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
@@ -24,6 +25,8 @@ import java.util.stream.Stream;
  * @author LittleRover
  */
 public abstract class Face {
+	private static final Logger LOG = AuroraLogs.getLogger(Face.class.getName());
+
 	protected Face(Vertex p_a, Vertex p_b, Vertex p_c) {
 		this.vertexes = new Vertex[]{p_a, p_b, p_c};
 	}

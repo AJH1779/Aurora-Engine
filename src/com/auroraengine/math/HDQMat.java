@@ -16,29 +16,29 @@
  */
 package com.auroraengine.math;
 
-import java.math.BigDecimal;
-import static java.math.BigDecimal.*;
+import com.auroraengine.debug.AuroraLogs;
 import static com.auroraengine.math.HDQVec.CONTEXT;
+import java.math.BigDecimal;
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
-
 import java.util.Arrays;
-// TODO: Update to be of the same structure as LD and HD variants.
+import java.util.logging.Logger;
 
 /**
  *
  * @author LittleRover
  */
 public final class HDQMat {
-	// The Static Methods
-
 	private static final BigDecimal[] IDENTITY = new BigDecimal[]{ONE, ZERO, ZERO,
 																																ZERO, ZERO, ONE,
 																																ZERO, ZERO, ZERO,
 																																ZERO, ONE, ZERO,
 																																ZERO, ZERO, ZERO,
 																																ONE};
+	private static final Logger LOG = AuroraLogs.getLogger(HDQMat.class.getName());
 	private static final BigDecimal[] ZERO_MAT = new BigDecimal[16];
 
 	/**
@@ -167,12 +167,250 @@ public final class HDQMat {
 	public HDQMat(HDQMat ref) {
 		set(ref);
 	}
-	private final BigDecimal[] dat = new BigDecimal[16];
-	private final DoubleBuffer buffer = ByteBuffer.allocateDirect(16 *
-																																Double.BYTES)
+	private final DoubleBuffer buffer = ByteBuffer
+					.allocateDirect(16 * Double.BYTES)
 					.order(ByteOrder.nativeOrder()).asDoubleBuffer();
-	private final DoubleBuffer read_only = buffer.asReadOnlyBuffer();
+	private final BigDecimal[] dat = new BigDecimal[16];
 	private volatile boolean modified = true;
+	private final DoubleBuffer read_only = buffer.asReadOnlyBuffer();
+
+	/**
+	 * Sets this to the zero reference frame, then returns this.
+	 *
+	 * @return This
+	 */
+	private HDQMat zero() {
+		return set(ZERO_MAT);
+	}
+
+	/**
+	 * Returns a read-only version of the matrix in a BigDecimal-buffer.
+	 *
+	 * @return The matrix as a read-only buffer
+	 */
+	public DoubleBuffer buffer() {
+		if (modified) {
+			for (BigDecimal dat1 : dat) {
+				buffer.put(dat1.doubleValue());
+			}
+			buffer.flip();
+			modified = false;
+		}
+		return this.read_only;
+	}
+
+	/**
+	 * Returns true only if the provided object is a <code>HDQRef</code> object
+	 * with the same transformation matrix as this.
+	 *
+	 * @param obj The object check
+	 *
+	 * @return If it is equivalent
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof HDQMat && Arrays.equals(dat, ((HDQMat) obj).dat);
+	}
+
+	/**
+	 * Returns the global origin in the reference frame.
+	 *
+	 * @return The local position of the global origin
+	 */
+	public HDQVec getOrigin() {
+		return new HDQVec(dat[12], dat[13], dat[14]);
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 97 * hash + Arrays.hashCode(this.dat);
+		return hash;
+	}
+
+	/**
+	 * Sets this to the identity reference frame, then returns this.
+	 *
+	 * @return This
+	 */
+	public HDQMat identity() {
+		return set(IDENTITY);
+	}
+
+	/**
+	 * Sets this to its inverse. Note this expolits the fact this matrix is a
+	 * special orthogonal affine matrix, and so does not transform arbitrary
+	 * matrix arguments.
+	 *
+	 * @return This
+	 */
+	public HDQMat invert() {
+		BigDecimal[] d = new BigDecimal[16];
+		d[0] = dat[0];
+		d[1] = dat[4];
+		d[2] = dat[8];
+		d[4] = dat[1];
+		d[5] = dat[5];
+		d[6] = dat[9];
+		d[8] = dat[2];
+		d[9] = dat[6];
+		d[10] = dat[10];
+		d[12] = (dat[0].multiply(dat[12]).add(dat[1].multiply(dat[13])).add(dat[2]
+						.multiply(dat[14]))).negate();
+		d[13] = (dat[4].multiply(dat[12]).add(dat[5].multiply(dat[13])).add(dat[6]
+						.multiply(dat[14]))).negate();
+		d[14] = (dat[8].multiply(dat[12]).add(dat[9].multiply(dat[13])).add(dat[10]
+						.multiply(dat[14]))).negate();
+		d[15] = ONE;
+		return set(d);
+	}
+
+	/**
+	 * Transforms this reference frame globally with the provided reference frame
+	 * transformation, that is before the transformation described by this frame,
+	 * then returns this. It is analogous to moving an object outside of this
+	 * reference frame.
+	 *
+	 * @param ref The transformation frame
+	 *
+	 * @return This
+	 */
+	public HDQMat multiplyGlobally(HDQMat ref) {
+		return mult(this, ref, this);
+	}
+
+	/**
+	 *
+	 * Transforms this reference frame locally with the provided reference frame
+	 * transformation, that is after the transformation described by this frame,
+	 * then returns this. It is analogous to moving an object within this
+	 * reference frame.
+	 *
+	 * @param ref The transformation frame
+	 *
+	 * @return This
+	 */
+	public HDQMat multiplyLocally(HDQMat ref) {
+		return mult(ref, this, this);
+	}
+
+	/**
+	 * Rotates the reference frame globally, that is before the transformation
+	 * described by this frame, then returns this. It is analogous to moving an
+	 * object outside of this reference frame.
+	 *
+	 * @param ang The Rotation Object
+	 *
+	 * @return This
+	 */
+	public HDQMat rotateGlobally(HDQAng ang) {
+		BigDecimal[] r = new BigDecimal[9], d = new BigDecimal[16];
+		r[0] = ang.cos().add(ang.X().multiply(ang.X().multiply((ONE.subtract(ang
+						.cos())))));
+		r[1] = ang.Y().multiply(ang.X()).multiply(ONE.subtract(ang.cos())).add(ang
+						.Z().multiply(ang.sin()));
+		r[2] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(
+						ang.Y().multiply(ang.sin()));
+		r[3] = ang.X().multiply(ang.Y()).multiply(ONE.subtract(ang.cos())).subtract(
+						ang.Z().multiply(ang.sin()));
+		r[4] = ang.cos().add(ang.Y().multiply(ang.Y().multiply((ONE.subtract(ang
+						.cos())))));
+		r[5] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang
+						.X().multiply(ang.sin()));
+		r[6] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang
+						.Y().multiply(ang.sin()));
+		r[7] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(
+						ang.X().multiply(ang.sin()));
+		r[8] = ang.cos().add(ang.Z().multiply(ang.Z().multiply((ONE.subtract(ang
+						.cos())))));
+
+		d[0] = (dat[0].multiply(r[0])).add(dat[4].multiply(r[1])).add(dat[8]
+						.multiply(r[2])).add(dat[12]);
+		d[1] = (dat[1].multiply(r[0])).add(dat[5].multiply(r[1])).add(dat[9]
+						.multiply(r[2])).add(dat[13]);
+		d[2] = (dat[2].multiply(r[0])).add(dat[6].multiply(r[1])).add(dat[10]
+						.multiply(r[2])).add(dat[14]);
+		d[4] = (dat[0].multiply(r[3])).add(dat[4].multiply(r[4])).add(dat[8]
+						.multiply(r[5])).add(dat[12]);
+		d[5] = (dat[1].multiply(r[3])).add(dat[5].multiply(r[4])).add(dat[9]
+						.multiply(r[5])).add(dat[13]);
+		d[6] = (dat[2].multiply(r[3])).add(dat[6].multiply(r[4])).add(dat[10]
+						.multiply(r[5])).add(dat[14]);
+		d[8] = (dat[0].multiply(r[6])).add(dat[4].multiply(r[7])).add(dat[8]
+						.multiply(r[8])).add(dat[12]);
+		d[9] = (dat[1].multiply(r[6])).add(dat[5].multiply(r[7])).add(dat[9]
+						.multiply(r[8])).add(dat[13]);
+		d[10] = (dat[2].multiply(r[6])).add(dat[6].multiply(r[7])).add(dat[10]
+						.multiply(r[8])).add(dat[14]);
+		d[12] = (dat[0].multiply(r[6])).add(dat[4].multiply(r[7])).add(dat[8]
+						.multiply(r[8])).add(dat[12]);
+		d[13] = (dat[1].multiply(r[6])).add(dat[5].multiply(r[7])).add(dat[9]
+						.multiply(r[8])).add(dat[13]);
+		d[14] = (dat[2].multiply(r[6])).add(dat[6].multiply(r[7])).add(dat[10]
+						.multiply(r[8])).add(dat[14]);
+		d[15] = ONE;
+
+		return set(d);
+	}
+
+	/**
+	 * Rotates the reference frame locally, that is after the transformation
+	 * described by this frame, then returns this. It is analogous to moving an
+	 * object within this reference frame.
+	 *
+	 * @param ang The rotation angle
+	 *
+	 * @return This
+	 */
+	public HDQMat rotateLocally(HDQAng ang) {
+		BigDecimal[] r = new BigDecimal[9], d = new BigDecimal[16];
+		r[0] = ang.cos().add(ang.X().multiply(ang.X().multiply((ONE.subtract(ang
+						.cos())))));
+		r[1] = ang.Y().multiply(ang.X()).multiply(ONE.subtract(ang.cos())).add(ang
+						.Z().multiply(ang.sin()));
+		r[2] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(
+						ang.Y().multiply(ang.sin()));
+		r[3] = ang.X().multiply(ang.Y()).multiply(ONE.subtract(ang.cos())).subtract(
+						ang.Z().multiply(ang.sin()));
+		r[4] = ang.cos().add(ang.Y().multiply(ang.Y().multiply((ONE.subtract(ang
+						.cos())))));
+		r[5] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang
+						.X().multiply(ang.sin()));
+		r[6] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang
+						.Y().multiply(ang.sin()));
+		r[7] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(
+						ang.X().multiply(ang.sin()));
+		r[8] = ang.cos().add(ang.Z().multiply(ang.Z().multiply((ONE.subtract(ang
+						.cos())))));
+
+		d[0] = r[0].multiply(dat[0]).add(r[3].multiply(dat[1])).add(r[6].multiply(
+						dat[2]));
+		d[1] = r[1].multiply(dat[0]).add(r[4].multiply(dat[1])).add(r[7].multiply(
+						dat[2]));
+		d[2] = r[2].multiply(dat[0]).add(r[5].multiply(dat[1])).add(r[8].multiply(
+						dat[2]));
+		d[4] = r[0].multiply(dat[4]).add(r[3].multiply(dat[5])).add(r[6].multiply(
+						dat[6]));
+		d[5] = r[1].multiply(dat[4]).add(r[4].multiply(dat[5])).add(r[7].multiply(
+						dat[6]));
+		d[6] = r[2].multiply(dat[4]).add(r[5].multiply(dat[5])).add(r[8].multiply(
+						dat[6]));
+		d[8] = r[0].multiply(dat[8]).add(r[3].multiply(dat[9])).add(r[6].multiply(
+						dat[10]));
+		d[9] = r[1].multiply(dat[8]).add(r[4].multiply(dat[9])).add(r[7].multiply(
+						dat[10]));
+		d[10] = r[2].multiply(dat[8]).add(r[5].multiply(dat[9])).add(r[8].multiply(
+						dat[10]));
+		d[12] = r[0].multiply(dat[12]).add(r[3].multiply(dat[13])).add(r[6]
+						.multiply(dat[14]));
+		d[13] = r[1].multiply(dat[12]).add(r[4].multiply(dat[13])).add(r[7]
+						.multiply(dat[14]));
+		d[14] = r[2].multiply(dat[12]).add(r[5].multiply(dat[13])).add(r[8]
+						.multiply(dat[14]));
+		d[15] = ONE;
+
+		return set(d);
+	}
 
 	/**
 	 * Clears the reference frame and sets it to a translation by the given
@@ -310,233 +548,53 @@ public final class HDQMat {
 	}
 
 	/**
-	 * Sets this to the identity reference frame, then returns this.
+	 * Returns a copy of this reference frame in a <code>HDRef</code> object.
 	 *
-	 * @return This
+	 * @return
 	 */
-	public HDQMat identity() {
-		return set(IDENTITY);
+	public HDMat toHD() {
+		double[] d = new double[16];
+		for (int i = 0; i < dat.length; i++) {
+			d[i] = dat[i].doubleValue();
+		}
+		return new HDMat(d);
 	}
 
 	/**
-	 * Sets this to the zero reference frame, then returns this.
+	 * Returns a copy of this reference frame.
 	 *
-	 * @return This
+	 * @return A <code>HDQRef</code> copy of this.
 	 */
-	private HDQMat zero() {
-		return set(ZERO_MAT);
+	public HDQMat toHDQ() {
+		return new HDQMat(this);
 	}
 
 	/**
-	 * Sets this to its inverse. Note this expolits the fact this matrix is a
-	 * special orthogonal affine matrix, and so does not transform arbitrary
-	 * matrix arguments.
+	 * Returns a copy of this reference frame in a <code>LDRef</code> object.
 	 *
-	 * @return This
+	 * @return A copy of this.
 	 */
-	public HDQMat invert() {
-		BigDecimal[] d = new BigDecimal[16];
-		d[0] = dat[0];
-		d[1] = dat[4];
-		d[2] = dat[8];
-		d[4] = dat[1];
-		d[5] = dat[5];
-		d[6] = dat[9];
-		d[8] = dat[2];
-		d[9] = dat[6];
-		d[10] = dat[10];
-		d[12] = (dat[0].multiply(dat[12]).add(dat[1].multiply(dat[13])).add(dat[2]
-						.multiply(dat[14]))).negate();
-		d[13] = (dat[4].multiply(dat[12]).add(dat[5].multiply(dat[13])).add(dat[6]
-						.multiply(dat[14]))).negate();
-		d[14] = (dat[8].multiply(dat[12]).add(dat[9].multiply(dat[13])).add(dat[10]
-						.multiply(dat[14]))).negate();
-		d[15] = ONE;
-		return set(d);
+	public LDMat toLD() {
+		float[] d = new float[16];
+		for (int i = 0; i < dat.length; i++) {
+			d[i] = dat[i].floatValue();
+		}
+		return new LDMat(d);
 	}
 
 	/**
-	 * Translates the reference frame locally, that is after the transformation
-	 * described by this frame, then returns this. It is analogous to moving an
-	 * object within this reference frame.
+	 * Returns the transformation matrix of this reference frame in the format
+	 * "{{0,4,8,12}\\n{1,5,9,13}\\n{2,6,10,14}\\n{3,7,11,15}}".
 	 *
-	 * @param vec The translation vector
-	 *
-	 * @return This
+	 * @return The transformation matrix in text.
 	 */
-	public HDQMat translateLocally(HDQVec vec) {
-		dat[12] = dat[12].add(vec.X());
-		dat[13] = dat[13].add(vec.Y());
-		dat[14] = dat[14].add(vec.Z());
-		modified = true;
-		return this;
-	}
-
-	/**
-	 * Translates the reference frame globally, that is before the transformation
-	 * described by this frame, then returns this. It is analogous to moving an
-	 * object outside of this reference frame.
-	 *
-	 * @param vec The translation vector
-	 *
-	 * @return This
-	 */
-	public HDQMat translateGlobally(HDQVec vec) {
-		dat[12] = dat[12].add(dat[0].multiply(vec.X()))
-						.add(dat[4].multiply(vec.Y())).add(dat[8].multiply(vec.Z()));
-		dat[13] = dat[14].add(dat[1].multiply(vec.X()))
-						.add(dat[5].multiply(vec.Y())).add(dat[9].multiply(vec.Z()));
-		dat[14] = dat[13].add(dat[2].multiply(vec.X()))
-						.add(dat[6].multiply(vec.Y())).add(dat[10].multiply(vec.Z()));
-		modified = true;
-		return this;
-	}
-
-	/**
-	 * Rotates the reference frame locally, that is after the transformation
-	 * described by this frame, then returns this. It is analogous to moving an
-	 * object within this reference frame.
-	 *
-	 * @param ang The rotation angle
-	 *
-	 * @return This
-	 */
-	public HDQMat rotateLocally(HDQAng ang) {
-		BigDecimal[] r = new BigDecimal[9], d = new BigDecimal[16];
-		r[0] = ang.cos().add(ang.X().multiply(ang.X().multiply((ONE.subtract(ang
-						.cos())))));
-		r[1] = ang.Y().multiply(ang.X()).multiply(ONE.subtract(ang.cos())).add(ang
-						.Z().multiply(ang.sin()));
-		r[2] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(
-						ang.Y().multiply(ang.sin()));
-		r[3] = ang.X().multiply(ang.Y()).multiply(ONE.subtract(ang.cos())).subtract(
-						ang.Z().multiply(ang.sin()));
-		r[4] = ang.cos().add(ang.Y().multiply(ang.Y().multiply((ONE.subtract(ang
-						.cos())))));
-		r[5] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang
-						.X().multiply(ang.sin()));
-		r[6] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang
-						.Y().multiply(ang.sin()));
-		r[7] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(
-						ang.X().multiply(ang.sin()));
-		r[8] = ang.cos().add(ang.Z().multiply(ang.Z().multiply((ONE.subtract(ang
-						.cos())))));
-
-		d[0] = r[0].multiply(dat[0]).add(r[3].multiply(dat[1])).add(r[6].multiply(
-						dat[2]));
-		d[1] = r[1].multiply(dat[0]).add(r[4].multiply(dat[1])).add(r[7].multiply(
-						dat[2]));
-		d[2] = r[2].multiply(dat[0]).add(r[5].multiply(dat[1])).add(r[8].multiply(
-						dat[2]));
-		d[4] = r[0].multiply(dat[4]).add(r[3].multiply(dat[5])).add(r[6].multiply(
-						dat[6]));
-		d[5] = r[1].multiply(dat[4]).add(r[4].multiply(dat[5])).add(r[7].multiply(
-						dat[6]));
-		d[6] = r[2].multiply(dat[4]).add(r[5].multiply(dat[5])).add(r[8].multiply(
-						dat[6]));
-		d[8] = r[0].multiply(dat[8]).add(r[3].multiply(dat[9])).add(r[6].multiply(
-						dat[10]));
-		d[9] = r[1].multiply(dat[8]).add(r[4].multiply(dat[9])).add(r[7].multiply(
-						dat[10]));
-		d[10] = r[2].multiply(dat[8]).add(r[5].multiply(dat[9])).add(r[8].multiply(
-						dat[10]));
-		d[12] = r[0].multiply(dat[12]).add(r[3].multiply(dat[13])).add(r[6]
-						.multiply(dat[14]));
-		d[13] = r[1].multiply(dat[12]).add(r[4].multiply(dat[13])).add(r[7]
-						.multiply(dat[14]));
-		d[14] = r[2].multiply(dat[12]).add(r[5].multiply(dat[13])).add(r[8]
-						.multiply(dat[14]));
-		d[15] = ONE;
-
-		return set(d);
-	}
-
-	/**
-	 * Rotates the reference frame globally, that is before the transformation
-	 * described by this frame, then returns this. It is analogous to moving an
-	 * object outside of this reference frame.
-	 *
-	 * @param ang The Rotation Object
-	 *
-	 * @return This
-	 */
-	public HDQMat rotateGlobally(HDQAng ang) {
-		BigDecimal[] r = new BigDecimal[9], d = new BigDecimal[16];
-		r[0] = ang.cos().add(ang.X().multiply(ang.X().multiply((ONE.subtract(ang
-						.cos())))));
-		r[1] = ang.Y().multiply(ang.X()).multiply(ONE.subtract(ang.cos())).add(ang
-						.Z().multiply(ang.sin()));
-		r[2] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(
-						ang.Y().multiply(ang.sin()));
-		r[3] = ang.X().multiply(ang.Y()).multiply(ONE.subtract(ang.cos())).subtract(
-						ang.Z().multiply(ang.sin()));
-		r[4] = ang.cos().add(ang.Y().multiply(ang.Y().multiply((ONE.subtract(ang
-						.cos())))));
-		r[5] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang
-						.X().multiply(ang.sin()));
-		r[6] = ang.X().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).add(ang
-						.Y().multiply(ang.sin()));
-		r[7] = ang.Y().multiply(ang.Z()).multiply(ONE.subtract(ang.cos())).subtract(
-						ang.X().multiply(ang.sin()));
-		r[8] = ang.cos().add(ang.Z().multiply(ang.Z().multiply((ONE.subtract(ang
-						.cos())))));
-
-		d[0] = (dat[0].multiply(r[0])).add(dat[4].multiply(r[1])).add(dat[8]
-						.multiply(r[2])).add(dat[12]);
-		d[1] = (dat[1].multiply(r[0])).add(dat[5].multiply(r[1])).add(dat[9]
-						.multiply(r[2])).add(dat[13]);
-		d[2] = (dat[2].multiply(r[0])).add(dat[6].multiply(r[1])).add(dat[10]
-						.multiply(r[2])).add(dat[14]);
-		d[4] = (dat[0].multiply(r[3])).add(dat[4].multiply(r[4])).add(dat[8]
-						.multiply(r[5])).add(dat[12]);
-		d[5] = (dat[1].multiply(r[3])).add(dat[5].multiply(r[4])).add(dat[9]
-						.multiply(r[5])).add(dat[13]);
-		d[6] = (dat[2].multiply(r[3])).add(dat[6].multiply(r[4])).add(dat[10]
-						.multiply(r[5])).add(dat[14]);
-		d[8] = (dat[0].multiply(r[6])).add(dat[4].multiply(r[7])).add(dat[8]
-						.multiply(r[8])).add(dat[12]);
-		d[9] = (dat[1].multiply(r[6])).add(dat[5].multiply(r[7])).add(dat[9]
-						.multiply(r[8])).add(dat[13]);
-		d[10] = (dat[2].multiply(r[6])).add(dat[6].multiply(r[7])).add(dat[10]
-						.multiply(r[8])).add(dat[14]);
-		d[12] = (dat[0].multiply(r[6])).add(dat[4].multiply(r[7])).add(dat[8]
-						.multiply(r[8])).add(dat[12]);
-		d[13] = (dat[1].multiply(r[6])).add(dat[5].multiply(r[7])).add(dat[9]
-						.multiply(r[8])).add(dat[13]);
-		d[14] = (dat[2].multiply(r[6])).add(dat[6].multiply(r[7])).add(dat[10]
-						.multiply(r[8])).add(dat[14]);
-		d[15] = ONE;
-
-		return set(d);
-	}
-
-	/**
-	 *
-	 * Transforms this reference frame locally with the provided reference frame
-	 * transformation, that is after the transformation described by this frame,
-	 * then returns this. It is analogous to moving an object within this
-	 * reference frame.
-	 *
-	 * @param ref The transformation frame
-	 *
-	 * @return This
-	 */
-	public HDQMat multiplyLocally(HDQMat ref) {
-		return mult(ref, this, this);
-	}
-
-	/**
-	 * Transforms this reference frame globally with the provided reference frame
-	 * transformation, that is before the transformation described by this frame,
-	 * then returns this. It is analogous to moving an object outside of this
-	 * reference frame.
-	 *
-	 * @param ref The transformation frame
-	 *
-	 * @return This
-	 */
-	public HDQMat multiplyGlobally(HDQMat ref) {
-		return mult(this, ref, this);
+	@Override
+	public String toString() {
+		return "{{" + dat[0] + "," + dat[4] + "," + dat[8] + "," + dat[12] + "}\n" +
+					 " {" + dat[1] + "," + dat[5] + "," + dat[9] + "," + dat[13] + "}\n" +
+					 " {" + dat[2] + "," + dat[6] + "," + dat[10] + "," + dat[14] +
+					 "}\n" +
+					 " {" + dat[3] + "," + dat[7] + "," + dat[11] + "," + dat[15] + "}}";
 	}
 
 	/**
@@ -592,63 +650,40 @@ public final class HDQMat {
 	}
 
 	/**
-	 * Returns the global origin in the reference frame.
+	 * Translates the reference frame globally, that is before the transformation
+	 * described by this frame, then returns this. It is analogous to moving an
+	 * object outside of this reference frame.
 	 *
-	 * @return The local position of the global origin
+	 * @param vec The translation vector
+	 *
+	 * @return This
 	 */
-	public HDQVec getOrigin() {
-		return new HDQVec(dat[12], dat[13], dat[14]);
+	public HDQMat translateGlobally(HDQVec vec) {
+		dat[12] = dat[12].add(dat[0].multiply(vec.X()))
+						.add(dat[4].multiply(vec.Y())).add(dat[8].multiply(vec.Z()));
+		dat[13] = dat[14].add(dat[1].multiply(vec.X()))
+						.add(dat[5].multiply(vec.Y())).add(dat[9].multiply(vec.Z()));
+		dat[14] = dat[13].add(dat[2].multiply(vec.X()))
+						.add(dat[6].multiply(vec.Y())).add(dat[10].multiply(vec.Z()));
+		modified = true;
+		return this;
 	}
 
 	/**
-	 * Returns a copy of this reference frame in a <code>LDRef</code> object.
+	 * Translates the reference frame locally, that is after the transformation
+	 * described by this frame, then returns this. It is analogous to moving an
+	 * object within this reference frame.
 	 *
-	 * @return A copy of this.
-	 */
-	public LDMat toLD() {
-		float[] d = new float[16];
-		for (int i = 0; i < dat.length; i++) {
-			d[i] = dat[i].floatValue();
-		}
-		return new LDMat(d);
-	}
-
-	/**
-	 * Returns a copy of this reference frame in a <code>HDRef</code> object.
+	 * @param vec The translation vector
 	 *
-	 * @return
+	 * @return This
 	 */
-	public HDMat toHD() {
-		double[] d = new double[16];
-		for (int i = 0; i < dat.length; i++) {
-			d[i] = dat[i].doubleValue();
-		}
-		return new HDMat(d);
-	}
-
-	/**
-	 * Returns a copy of this reference frame.
-	 *
-	 * @return A <code>HDQRef</code> copy of this.
-	 */
-	public HDQMat toHDQ() {
-		return new HDQMat(this);
-	}
-
-	/**
-	 * Returns a read-only version of the matrix in a BigDecimal-buffer.
-	 *
-	 * @return The matrix as a read-only buffer
-	 */
-	public DoubleBuffer buffer() {
-		if (modified) {
-			for (BigDecimal dat1 : dat) {
-				buffer.put(dat1.doubleValue());
-			}
-			buffer.flip();
-			modified = false;
-		}
-		return this.read_only;
+	public HDQMat translateLocally(HDQVec vec) {
+		dat[12] = dat[12].add(vec.X());
+		dat[13] = dat[13].add(vec.Y());
+		dat[14] = dat[14].add(vec.Z());
+		modified = true;
+		return this;
 	}
 
 	/**
@@ -666,38 +701,4 @@ public final class HDQMat {
 		return bb;
 	}
 
-	/**
-	 * Returns the transformation matrix of this reference frame in the format
-	 * "{{0,4,8,12}\\n{1,5,9,13}\\n{2,6,10,14}\\n{3,7,11,15}}".
-	 *
-	 * @return The transformation matrix in text.
-	 */
-	@Override
-	public String toString() {
-		return "{{" + dat[0] + "," + dat[4] + "," + dat[8] + "," + dat[12] + "}\n" +
-					 " {" + dat[1] + "," + dat[5] + "," + dat[9] + "," + dat[13] + "}\n" +
-					 " {" + dat[2] + "," + dat[6] + "," + dat[10] + "," + dat[14] +
-					 "}\n" +
-					 " {" + dat[3] + "," + dat[7] + "," + dat[11] + "," + dat[15] + "}}";
-	}
-
-	/**
-	 * Returns true only if the provided object is a <code>HDQRef</code> object
-	 * with the same transformation matrix as this.
-	 *
-	 * @param obj The object check
-	 *
-	 * @return If it is equivalent
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof HDQMat && Arrays.equals(dat, ((HDQMat) obj).dat);
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = 3;
-		hash = 97 * hash + Arrays.hashCode(this.dat);
-		return hash;
-	}
 }

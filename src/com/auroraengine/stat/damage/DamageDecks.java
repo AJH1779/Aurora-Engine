@@ -29,10 +29,11 @@ import java.util.stream.Stream;
  * @author LittleRover
  */
 public class DamageDecks {
+	private static final int CRIT_DECK_SIZE = 30;
 
 	private static final Logger LOG = AuroraLogs.getLogger(DamageDecks.class
 					.getName());
-	private static final int NORM_DECK_SIZE = 80, CRIT_DECK_SIZE = 30;
+	private static final int NORM_DECK_SIZE = 80;
 
 	public DamageDecks(
 					BiFunction<ElementType, Integer, DamageCard> non_lethal_norm_gen,
@@ -64,14 +65,13 @@ public class DamageDecks {
 			lethal_crit_list.trimToSize();
 		}
 	}
-
-	private final HashMap<ElementType, ArrayList<DamageCard>> non_lethal_norm = new HashMap<>(
-					ElementType.values().length);
-	private final HashMap<ElementType, ArrayList<DamageCard>> non_lethal_crit = new HashMap<>(
+	private final HashMap<ElementType, ArrayList<DamageCard>> lethal_crit = new HashMap<>(
 					ElementType.values().length);
 	private final HashMap<ElementType, ArrayList<DamageCard>> lethal_norm = new HashMap<>(
 					ElementType.values().length);
-	private final HashMap<ElementType, ArrayList<DamageCard>> lethal_crit = new HashMap<>(
+	private final HashMap<ElementType, ArrayList<DamageCard>> non_lethal_crit = new HashMap<>(
+					ElementType.values().length);
+	private final HashMap<ElementType, ArrayList<DamageCard>> non_lethal_norm = new HashMap<>(
 					ElementType.values().length);
 
 	public Stream<DamageCard> deal(ElementType type, int i) {

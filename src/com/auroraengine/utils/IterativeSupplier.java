@@ -16,10 +16,11 @@
  */
 package com.auroraengine.utils;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 /**
  * A special supplier that iterates through the list of objects, allowing for
@@ -28,6 +29,9 @@ import java.util.function.Supplier;
  * @param <T>
  */
 public class IterativeSupplier<T> implements Supplier<T> {
+	private static final Logger LOG = AuroraLogs.getLogger(IterativeSupplier.class
+					.getName());
+
 	public IterativeSupplier(List<T> p_list) {
 		this.list = p_list;
 		this.iterator = list.iterator();

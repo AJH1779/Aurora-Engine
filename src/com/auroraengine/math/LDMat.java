@@ -16,6 +16,7 @@
  */
 package com.auroraengine.math;
 
+import com.auroraengine.debug.AuroraLogs;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -34,7 +35,7 @@ public final class LDMat implements Cloneable {
 	private static final float[] IDENTITY = new float[]{1f, 0f, 0f, 0f, 0f, 1f, 0f,
 																											0f, 0f, 0f, 1f, 0f, 0f, 0f,
 																											0f, 1f};
-	private static final Logger LOG = Logger.getLogger(LDMat.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(LDMat.class.getName());
 
 	/**
 	 * Performs the matrix multiplication of ref1 on ref2, returning the result as

@@ -16,6 +16,9 @@
  */
 package com.auroraengine.math;
 
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
+
 /**
  * An object representing a colour. Beware when modifying, as this may be used
  * by multiple objects simultaneously.
@@ -23,6 +26,7 @@ package com.auroraengine.math;
  * @author LittleRover
  */
 public final class Colour {
+	private static final Logger LOG = AuroraLogs.getLogger(Colour.class.getName());
 
 	private static int toBound(int i) {
 		return Math.max(0, Math.min(255, i));

@@ -29,7 +29,6 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class ServerCore extends SynchroCore {
-
 	private static final Logger LOG = AuroraLogs.getLogger(ServerCore.class
 					.getName());
 
@@ -47,18 +46,9 @@ public class ServerCore extends SynchroCore {
 		this.world = new WorldCore(name + " World Core", this);
 	}
 
-	private final ProgramProperties properties;
 	private final ServerNetworkCore network;
+	private final ProgramProperties properties;
 	private final WorldCore world;
-
-	/**
-	 * Returns the program properties.
-	 *
-	 * @return The program properties.
-	 */
-	public final ProgramProperties getProperties() {
-		return properties;
-	}
 
 	@Override
 	protected void initialise()
@@ -80,9 +70,8 @@ public class ServerCore extends SynchroCore {
 	}
 
 	@Override
-	protected void update()
-					throws ServerException {
-
+	protected void processException(AuroraException ex) {
+		LOG.log(Level.SEVERE, "Fatal Exception: {0}", ex);
 	}
 
 	@Override
@@ -94,7 +83,17 @@ public class ServerCore extends SynchroCore {
 	}
 
 	@Override
-	protected void processException(AuroraException ex) {
-		LOG.log(Level.SEVERE, "Fatal Exception: {0}", ex);
+	protected void update()
+					throws ServerException {
+
+	}
+
+	/**
+	 * Returns the program properties.
+	 *
+	 * @return The program properties.
+	 */
+	public final ProgramProperties getProperties() {
+		return properties;
 	}
 }

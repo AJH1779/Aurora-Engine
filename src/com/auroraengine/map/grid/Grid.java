@@ -17,9 +17,7 @@
 package com.auroraengine.map.grid;
 
 import com.auroraengine.debug.AuroraLogs;
-
 import static java.lang.Math.abs;
-
 import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
@@ -50,9 +48,6 @@ public class Grid<T> {
 	public static <T> T func_make_null(int[] p, T t) {
 		return null;
 	}
-
-	private final int[] position, offset, maximum;
-	private final Object[] grid;
 
 	/**
 	 * Creates a new single element grid with the specified dimension. This is for
@@ -100,6 +95,10 @@ public class Grid<T> {
 		}
 		grid = new Object[length];
 	}
+	private final Object[] grid;
+	private final int[] maximum;
+	private final int[] offset;
+	private final int[] position;
 
 	/**
 	 * Returns the internal reference number for the specified grid coordinate.
@@ -128,6 +127,10 @@ public class Grid<T> {
 		return e;
 	}
 
+	public void clear() {
+		Arrays.fill(grid, null);
+	}
+
 	/**
 	 * Returns the grid object at the given coordinates.
 	 *
@@ -148,6 +151,15 @@ public class Grid<T> {
 		@SuppressWarnings("unchecked")
 		T t = (T) grid[ref];
 		return t;
+	}
+
+	/**
+	 * Returns the dimensions of the grid.
+	 *
+	 * @return
+	 */
+	public int getDimension() {
+		return position.length;
 	}
 
 	/**
@@ -180,10 +192,6 @@ public class Grid<T> {
 		return b;
 	}
 
-	public void clear() {
-		Arrays.fill(grid, null);
-	}
-
 	public boolean translate(int[] dp) {
 		if (dp.length != position.length) {
 			LOG.log(Level.WARNING, "Invalid position submitted!");
@@ -213,12 +221,4 @@ public class Grid<T> {
 		return done;
 	}
 
-	/**
-	 * Returns the dimensions of the grid.
-	 *
-	 * @return
-	 */
-	public int getDimension() {
-		return position.length;
-	}
 }

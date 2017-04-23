@@ -17,6 +17,7 @@
 package com.auroraengine.camera;
 
 import com.auroraengine.debug.AuroraException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.math.LDMat;
 import com.auroraengine.math.geometry.Plane;
 import com.auroraengine.math.geometry.Side;
@@ -33,7 +34,8 @@ public final class Frustum {
 	private static final int BOTTOM = 2;
 	private static final int FAR = 5;
 	private static final int LEFT = 0;
-	private static final Logger LOG = Logger.getLogger(Frustum.class.getName());
+	private static final Logger LOG = AuroraLogs
+					.getLogger(Frustum.class.getName());
 	private static final int NEAR = 4;
 	private static final int RIGHT = 1;
 	private static final int TOP = 3;

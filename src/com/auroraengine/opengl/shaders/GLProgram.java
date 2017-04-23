@@ -18,6 +18,7 @@ package com.auroraengine.opengl.shaders;
 
 import com.auroraengine.client.ClientException;
 import com.auroraengine.data.Client;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.GLSharedObject;
 import com.auroraengine.opengl.GLVersion;
@@ -30,7 +31,8 @@ import org.lwjgl.opengl.GL20;
 @Client
 @GLVersion(version = 20)
 public class GLProgram extends GLSharedObject {
-	private static final Logger LOG = Logger.getLogger(GLProgram.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(GLProgram.class
+					.getName());
 
 	public GLProgram(GLShader p_vertex, GLShader p_fragment)
 					throws ClientException {

@@ -17,6 +17,7 @@
 package com.auroraengine.creature.body;
 
 import com.auroraengine.creature.body.genetics.Genome;
+import com.auroraengine.debug.AuroraLogs;
 import java.util.logging.Logger;
 
 /**
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class Body {
-	private static final Logger LOG = Logger.getLogger(Body.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(Body.class.getName());
 
 	// TODO: Implement the better body from another project.
 	private Body() {

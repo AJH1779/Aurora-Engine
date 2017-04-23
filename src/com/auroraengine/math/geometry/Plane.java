@@ -16,13 +16,17 @@
  */
 package com.auroraengine.math.geometry;
 
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.math.LDVec;
+import java.util.logging.Logger;
 
 /**
  *
  * @author LittleRover
  */
 public class Plane {
+	private static final Logger LOG = AuroraLogs.getLogger(Plane.class.getName());
+
 	public Plane(LDVec p_normal) {
 		this.normal = p_normal;
 	}

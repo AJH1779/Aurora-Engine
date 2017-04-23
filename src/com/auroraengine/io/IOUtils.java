@@ -17,6 +17,7 @@
 package com.auroraengine.io;
 
 import com.auroraengine.debug.AuroraException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.utils.NotNull;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,14 +31,25 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class IOUtils {
-	private static final Logger LOG = Logger.getLogger(IOUtils.class.getName());
+	private static final Logger LOG = AuroraLogs
+					.getLogger(IOUtils.class.getName());
 
+	/**
+	 * Returns the contents of the file as a string, any Exceptions thrown wrapped
+	 * in an AuroraException.
+	 *
+	 * @param f The file
+	 *
+	 * @return the contents of the file.
+	 *
+	 * @throws AuroraException Any wrapped IOExceptions or NoSuchElementExceptions
+	 */
 	@NotNull
 	public static String fileToString(@NotNull File f)
 					throws AuroraException {
 		String data = null;
 		try (Scanner s = new Scanner(f)) {
-			data = s.useDelimiter("\\0").next();
+			data = s.useDelimiter("\\0").next(); // TODO: Verify the regex
 		} catch (FileNotFoundException | NoSuchElementException ex) {
 			LOG.log(Level.WARNING, "Failed to read file: {0}", f.getAbsolutePath());
 			throw new AuroraException(ex);

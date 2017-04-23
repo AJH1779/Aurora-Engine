@@ -16,5 +16,13 @@
  */
 package com.auroraengine.opengl.gui;
 
+import com.auroraengine.debug.AuroraLogs;
+import java.util.logging.Logger;
+
 public class GUIFrame {
+	private static final Logger LOG = AuroraLogs.getLogger(GUIFrame.class
+					.getName());
+
+	private GUIFrame() {
+	}
 }

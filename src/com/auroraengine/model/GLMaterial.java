@@ -17,9 +17,11 @@
 package com.auroraengine.model;
 
 import com.auroraengine.client.ClientException;
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.opengl.GLException;
 import com.auroraengine.opengl.GLSharedObject;
 import com.auroraengine.opengl.shaders.GLProgram;
+import java.util.logging.Logger;
 
 /**
  * Denotes an implementation of a shader program with textures for use by a
@@ -28,6 +30,9 @@ import com.auroraengine.opengl.shaders.GLProgram;
  * @author LittleRover
  */
 public class GLMaterial extends GLSharedObject {
+	private static final Logger LOG = AuroraLogs.getLogger(GLMaterial.class
+					.getName());
+
 	public GLMaterial(GLProgram program) {
 		this.program = program;
 	}

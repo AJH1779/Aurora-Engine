@@ -5,6 +5,7 @@
  */
 package com.auroraengine.world;
 
+import com.auroraengine.debug.AuroraLogs;
 import com.auroraengine.threading.SynchroCore;
 import java.util.HashSet;
 import java.util.logging.Logger;
@@ -14,8 +15,8 @@ import java.util.logging.Logger;
  * @author LittleRover
  */
 public class PrimaryDimension extends Dimension {
-
-	private static final Logger LOG = Logger.getLogger(PrimaryDimension.class.getName());
+	private static final Logger LOG = AuroraLogs.getLogger(PrimaryDimension.class
+					.getName());
 
 	public PrimaryDimension(String name, SynchroCore master) {
 		super(name, master);
